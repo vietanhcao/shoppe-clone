@@ -7,11 +7,14 @@ import Input from '../../components/Input'
 import { Schema, schema } from '../../utils/rules'
 import { registerAccount } from '../../apis/auth.api'
 import { omit } from 'lodash'
+import { isAxiosUnprocessableEntityError } from '../../utils/utils'
+import { ResponseApi } from '../../types/utils.type'
 
 export default function Register() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<Schema>({
     resolver: yupResolver(schema)
@@ -26,6 +29,18 @@ export default function Register() {
     regtisterAccountMutation.mutate(body, {
       onSuccess: (data) => {
         console.log('data', data)
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
+          const formError = error.response?.data.data
+          // todo use for loop to set error
+          if (formError?.email) {
+            setError('email', {
+              message: formError.email,
+              type: 'server'
+            })
+          }
+        }
       }
     })
   }
