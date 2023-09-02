@@ -4,11 +4,11 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
 import Input from '../../components/Input'
-import { Schema, schema } from '../../utils/rules'
+import { Schema, schema } from '../../libs/rules'
 import { registerAccount } from '../../apis/auth.api'
 import { omit } from 'lodash'
-import { isAxiosUnprocessableEntityError } from '../../utils/utils'
-import { ResponseApi } from '../../types/utils.type'
+import { isAxiosUnprocessableEntityError } from '../../libs/utils'
+import { ResponseApi } from '../../types/api.type'
 
 export default function Register() {
   const {

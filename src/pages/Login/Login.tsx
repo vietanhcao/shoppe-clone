@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
-import { Schema, schema } from '../../utils/rules'
+import { Schema, schema } from '../../libs/rules'
 import { login } from '../../apis/auth.api'
 import { useMutation } from '@tanstack/react-query'
-import { isAxiosUnprocessableEntityError } from '../../utils/utils'
-import { ErrorResponse } from '../../types/utils.type'
+import { isAxiosUnprocessableEntityError } from '../../libs/utils'
+import { ErrorResponse } from '../../types/api.type'
 import Input from '../../components/Input'
 
 const loginSchema = schema.pick(['email', 'password'])
