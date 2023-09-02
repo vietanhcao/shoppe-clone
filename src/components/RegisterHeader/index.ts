@@ -1,3 +1,1 @@
-import RegisterHeader from './RegisterHeader'
-
-export default RegisterHeader
+export { default } from './RegisterHeader'
