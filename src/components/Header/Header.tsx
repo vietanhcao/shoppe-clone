@@ -48,7 +48,7 @@ export default function Header() {
             className='flex items-center py-2 hover:text-gray:300 cursor-pointer ml-6'
             renderPopover={
               <div className='shadow-md rounded-sm bg-white relative border-gray-200Ï '>
-                <Link to='/' className='w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'>
+                <Link to='/profile' className='w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'>
                   Tài khoản của tôi
                 </Link>
                 <Link to='/' className='w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'>
