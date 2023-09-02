@@ -1,6 +1,7 @@
 import {
   FloatingArrow,
   FloatingPortal,
+  Placement,
   arrow,
   autoUpdate,
   offset,
@@ -20,6 +21,7 @@ interface PopoverProps {
   className?: string
   as?: ElementType
   initialOpen?: boolean
+  placement?: Placement
 }
 
 export default function Popover({
@@ -27,7 +29,8 @@ export default function Popover({
   renderPopover,
   className,
   as: Element = 'div',
-  initialOpen
+  initialOpen,
+  placement = 'bottom-end'
 }: PopoverProps) {
   const id = useId()
   const arrowRef = useRef(null)
@@ -43,6 +46,7 @@ export default function Popover({
         element: arrowRef
       })
     ],
+    placement,
     whileElementsMounted: autoUpdate
   })
 
