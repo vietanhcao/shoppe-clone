@@ -5,13 +5,15 @@ import ProductList from './pages/ProductList'
 import Register from './pages/Register'
 import MainLayout from './layouts/MainLayout'
 import Profile from './pages/Profile'
+import useGlobalStore from './store/useGlobalStore'
 
-const isAuthenticated = false
 function ProtectedRoute() {
+  const isAuthenticated = useGlobalStore.getState().accessToken
   return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
 }
 
 function RejectedRoute() {
+  const isAuthenticated = useGlobalStore.getState().accessToken
   return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
 }
 

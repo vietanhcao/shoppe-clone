@@ -1,18 +1,25 @@
-import { create } from 'zustand'
+import { StateCreator, create } from 'zustand'
+import { PersistOptions, persist } from 'zustand/middleware'
+
 import { logger } from './logger'
-import { getItem, setItem } from '../libs/localStorage'
 
 interface GlobalState {
-  isAuthenticated: boolean
-  setIsAuthenticated: (isAuth: boolean) => void
+  accessToken: string
+  setAccessToken: (token: string) => void
 }
+type MyPersist = (config: StateCreator<GlobalState>, options: PersistOptions<GlobalState>) => StateCreator<GlobalState>
 
 const useGlobalStore = create<GlobalState>()(
   logger<GlobalState>(
-    (set) => ({
-      isAuthenticated: false,
-      setIsAuthenticated: (isAuth) => set({ isAuthenticated: isAuth })
-    }),
+    (persist as MyPersist)(
+      (set) => ({
+        accessToken: '',
+        setAccessToken: (token) => set({ accessToken: token })
+      }),
+      {
+        name: 'Shoppeee-storage'
+      }
+    ),
     'globalStore'
   )
 )

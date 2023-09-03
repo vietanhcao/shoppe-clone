@@ -19,4 +19,12 @@ const setItem = (key: string, value: unknown) => {
   window.localStorage.setItem(key, JSON.stringify(value))
 }
 
-export { getItem, setItem }
+/**
+ * Remove a value to localStorage with the given key.
+ * @param key The key to use to store the value in localStorage.
+ */
+const removeItem = (key: string) => {
+  window.localStorage.removeItem(key)
+}
+
+export { getItem, setItem, removeItem }

@@ -1,16 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
+import { omit } from 'lodash'
+import { registerAccount } from '../../apis/auth.api'
 import Input from '../../components/Input'
 import { Schema, schema } from '../../libs/rules'
-import { registerAccount } from '../../apis/auth.api'
-import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '../../libs/utils'
-import { ResponseApi } from '../../types/api.type'
+import { ErrorResponse } from '../../types/api.type'
 
 export default function Register() {
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -27,11 +28,11 @@ export default function Register() {
   const onSubmit: SubmitHandler<Schema> = (data) => {
     const body = omit(data, ['confirm_password'])
     regtisterAccountMutation.mutate(body, {
-      onSuccess: (data) => {
-        console.log('data', data)
+      onSuccess: () => {
+        navigate('/')
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<Schema, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           // todo use for loop to set error
           if (formError?.email) {

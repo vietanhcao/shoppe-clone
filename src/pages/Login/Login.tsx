@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Schema, schema } from '../../libs/rules'
 import { login } from '../../apis/auth.api'
 import { useMutation } from '@tanstack/react-query'
@@ -12,6 +12,7 @@ const loginSchema = schema.pick(['email', 'password'])
 type FormData = Pick<Schema, 'email' | 'password'>
 
 export default function Login() {
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -28,7 +29,8 @@ export default function Login() {
   const onSubmit: SubmitHandler<FormData> = (data) => {
     loginAccountMutation.mutate(data, {
       onSuccess: (data) => {
-        console.log('data', data)
+        console.log('loginAccountMutation data', data)
+        navigate('/')
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponse<FormData>>(error)) {

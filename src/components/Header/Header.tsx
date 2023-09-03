@@ -1,18 +1,37 @@
-import { Link } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { Link, useNavigate } from 'react-router-dom'
+import { logout } from '../../apis/auth.api'
 import Popover from '../Popover'
+import useGlobalStore from '../../store/useGlobalStore'
 
 export default function Header() {
+  const store = useGlobalStore()
+  const navigate = useNavigate()
+
+  const isAuthenticated = !!store.accessToken
+
+  const logoutMutation = useMutation({
+    mutationFn: () => logout(),
+    onSuccess: () => {
+      navigate('/login')
+    }
+  })
+
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
+
   return (
-    <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white'>
+    <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white text-sm'>
       <div className='container'>
         <div className='flex justify-end pb-3'>
           <Popover
             className='flex items-center py-1 hover:text-gray:300 cursor-pointer'
             renderPopover={
-              <div className='bg-white relative shadow-md rounded-sm border border-gray-200 pr-32 pl-2'>
-                <div className='flex flex-col py-2 px-3'>
-                  <button className='py-2 px-3 hover:text-orange'>Tiếng Việt</button>
-                  <button className='py-2 px-3 hover:text-orange mt-2'>English</button>
+              <div className='bg-white relative shadow-md rounded-sm border border-gray-200 pr-32 text-sm'>
+                <div className='flex flex-col py-1 px-3 items-start'>
+                  <button className='py-1 px-1 hover:text-orange'>Tiếng Việt</button>
+                  <button className='py-1 px-1 hover:text-orange mt-2'>English</button>
                 </div>
               </div>
             }
@@ -44,31 +63,54 @@ export default function Header() {
             </svg>
           </Popover>
 
-          <Popover
-            className='flex items-center py-2 hover:text-gray:300 cursor-pointer ml-6'
-            renderPopover={
-              <div className='shadow-md rounded-sm bg-white relative border-gray-200Ï '>
-                <Link to='/profile' className='w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'>
-                  Tài khoản của tôi
-                </Link>
-                <Link to='/' className='w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'>
-                  Đơn mua
-                </Link>
-                <button className='w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500 text-left'>
-                  Đăng xuất
-                </button>
+          {isAuthenticated && (
+            <Popover
+              className='flex items-center py-1 hover:text-gray:300 cursor-pointer ml-6'
+              renderPopover={
+                <div className='shadow-md rounded-sm bg-white relative border-gray-200Ï '>
+                  <Link
+                    to='/profile'
+                    className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'
+                  >
+                    Tài khoản của tôi
+                  </Link>
+                  <Link
+                    to='/'
+                    className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'
+                  >
+                    Đơn mua
+                  </Link>
+                  <button
+                    className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500 text-left'
+                    onClick={handleLogout}
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              }
+            >
+              <div className='w-5 h-5 mr-2 flex-shrink-0'>
+                <img
+                  src='https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
+                  alt='avatar'
+                  className='w-full h-full object-cover rounded-full'
+                />
               </div>
-            }
-          >
-            <div className='w-5 h-5 mr-2 flex-shrink-0'>
-              <img
-                src='https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
-                alt='avatar'
-                className='w-full h-full object-cover rounded-full'
-              />
+              <div>viet anh</div>
+            </Popover>
+          )}
+
+          {!isAuthenticated && (
+            <div className='flex flex-center py-1'>
+              <Link to='/register' className='mx-3 capitalize hover:text-white hover:opacity-70'>
+                Đăng ký
+              </Link>
+              <div className='border-r-[1px] border-r-white/50 h-5' />
+              <Link to='/login' className='mx-3 capitalize hover:text-white hover:opacity-70'>
+                Đăng nhập
+              </Link>
             </div>
-            <div>viet anh</div>
-          </Popover>
+          )}
         </div>
         <div className='grid grid-cols-12 gap-4 items-end'>
           <Link to='/' className='col-span-2'>
@@ -83,9 +125,9 @@ export default function Header() {
               <input
                 type='text'
                 name='search'
-                className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
+                className='text-black px-3 py-1 flex-grow border-none outline-none bg-transparent'
               ></input>
-              <button className='rounded-sm flex-shrink-0 text-white py-2 px-6 bg-orange hover:opacity-90'>
+              <button className='rounded-sm flex-shrink-0 text-white py-1 px-6 bg-orange hover:opacity-90'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -149,7 +191,7 @@ export default function Header() {
 
                     <div className='mt-6 flex items-center justify-end'>
                       {/* <div className='text-sx capitalize'>Sản phẩm xem gần đây</div> */}
-                      <button className='text-xs bg-orange hover:opacity-90 capitalize px-4 py-2 rounded-sm text-white'>
+                      <button className='text-xs bg-orange hover:opacity-90 capitalize px-4 py-1 rounded-sm text-white'>
                         Xem giỏ hàng
                       </button>
                     </div>
