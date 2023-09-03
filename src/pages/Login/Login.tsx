@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query'
 import { isAxiosUnprocessableEntityError } from '../../libs/utils'
 import { ErrorResponse } from '../../types/api.type'
 import Input from '../../components/Input'
+import Button from '../../components/Button/Button'
 
 const loginSchema = schema.pick(['email', 'password'])
 type FormData = Pick<Schema, 'email' | 'password'>
@@ -71,12 +72,14 @@ export default function Login() {
                 classNameBoundary='mt-3'
               />
               <div className='mt-3'>
-                <button
+                <Button
                   type='submit'
                   className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'
+                  isLoading={loginAccountMutation.isLoading}
+                  disabled={loginAccountMutation.isLoading}
                 >
                   Đăng nhập
-                </button>
+                </Button>
               </div>
               <div className='flex items-center justify-center mt-8 '>
                 <span className='text-slate-300'>Bạn chưa có tài khoản?</span>

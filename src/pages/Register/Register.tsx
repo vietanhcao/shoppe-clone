@@ -9,6 +9,7 @@ import Input from '../../components/Input'
 import { Schema, schema } from '../../libs/rules'
 import { isAxiosUnprocessableEntityError } from '../../libs/utils'
 import { ErrorResponse } from '../../types/api.type'
+import Button from '../../components/Button/Button'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -79,12 +80,14 @@ export default function Register() {
                 autoComplete='on'
               />
               <div className='mt-2'>
-                <button
+                <Button
                   type='submit'
                   className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'
+                  isLoading={regtisterAccountMutation.isLoading}
+                  disabled={regtisterAccountMutation.isLoading}
                 >
                   Đăng ký
-                </button>
+                </Button>
               </div>
               <div className='flex items-center justify-center mt-8 '>
                 <span className='text-slate-300'>Bạn đã có tài khoản?</span>
