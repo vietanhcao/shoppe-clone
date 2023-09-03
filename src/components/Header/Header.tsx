@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { logout } from '../../apis/auth.api'
+import authApi from '../../apis/auth.api'
 import Popover from '../Popover'
 import useGlobalStore from '../../store/useGlobalStore'
 import pathUrl from '../../constants/pathUrl'
@@ -12,7 +12,7 @@ export default function Header() {
   const isAuthenticated = !!store.accessToken
 
   const logoutMutation = useMutation({
-    mutationFn: () => logout(),
+    mutationFn: () => authApi.logout(),
     onSuccess: () => {
       navigate('/login')
     }

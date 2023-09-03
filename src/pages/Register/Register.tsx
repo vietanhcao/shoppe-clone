@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { omit } from 'lodash'
-import { registerAccount } from '../../apis/auth.api'
+import authApi from '../../apis/auth.api'
 import Input from '../../components/Input'
 import { Schema, schema } from '../../libs/rules'
 import { isAxiosUnprocessableEntityError } from '../../libs/utils'
@@ -24,7 +24,7 @@ export default function Register() {
   })
 
   const regtisterAccountMutation = useMutation({
-    mutationFn: (body: Omit<Schema, 'confirm_password'>) => registerAccount(body)
+    mutationFn: (body: Omit<Schema, 'confirm_password'>) => authApi.registerAccount(body)
   })
 
   const onSubmit: SubmitHandler<Schema> = (data) => {
