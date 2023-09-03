@@ -8,6 +8,7 @@ import { isAxiosUnprocessableEntityError } from '../../libs/utils'
 import { ErrorResponse } from '../../types/api.type'
 import Input from '../../components/Input'
 import Button from '../../components/Button/Button'
+import pathUrl from '../../constants/pathUrl'
 
 const loginSchema = schema.pick(['email', 'password'])
 type FormData = Pick<Schema, 'email' | 'password'>
@@ -83,7 +84,7 @@ export default function Login() {
               </div>
               <div className='flex items-center justify-center mt-8 '>
                 <span className='text-slate-300'>Bạn chưa có tài khoản?</span>
-                <Link to='/register' className='text-red-400 ml-2'>
+                <Link to={pathUrl.register} className='text-red-400 ml-2'>
                   Đăng ký
                 </Link>
               </div>

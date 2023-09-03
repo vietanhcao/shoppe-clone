@@ -3,6 +3,7 @@ import axios, { HttpStatusCode } from 'axios'
 import { toast } from 'react-hot-toast'
 import useGlobalStore from '../store/useGlobalStore'
 import { AuthResponse } from '../types/auth.type'
+import pathUrl from '../constants/pathUrl'
 
 class Http {
   instance: AxiosInstance
@@ -33,12 +34,14 @@ class Http {
       (response) => {
         console.log('response', response)
         const { url } = response.config
-        if (url === '/login' || url === '/register') {
+        if (url === pathUrl.login || url === pathUrl.register) {
           this.accessToken = (response.data as AuthResponse).data.access_token
           useGlobalStore.getState().setAccessToken(this.accessToken)
-        } else if (url === '/logout') {
+          useGlobalStore.getState().setProfile((response.data as AuthResponse).data.user)
+        } else if (url === pathUrl.logout) {
           this.accessToken = ''
           useGlobalStore.getState().setAccessToken('')
+          useGlobalStore.getState().setProfile(null)
         }
         return response
       },

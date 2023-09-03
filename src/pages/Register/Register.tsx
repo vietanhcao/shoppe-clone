@@ -10,6 +10,7 @@ import { Schema, schema } from '../../libs/rules'
 import { isAxiosUnprocessableEntityError } from '../../libs/utils'
 import { ErrorResponse } from '../../types/api.type'
 import Button from '../../components/Button/Button'
+import pathUrl from '../../constants/pathUrl'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -91,7 +92,7 @@ export default function Register() {
               </div>
               <div className='flex items-center justify-center mt-8 '>
                 <span className='text-slate-300'>Bạn đã có tài khoản?</span>
-                <Link to='/login' className='text-red-400 ml-2'>
+                <Link to={pathUrl.login} className='text-red-400 ml-2'>
                   Đăng nhập
                 </Link>
               </div>

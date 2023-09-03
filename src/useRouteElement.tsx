@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import MainLayout from './layouts/MainLayout'
 import Profile from './pages/Profile'
 import useGlobalStore from './store/useGlobalStore'
+import pathUrl from './constants/pathUrl'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -24,7 +25,7 @@ export default function useRouteElement() {
       element: <RejectedRoute />,
       children: [
         {
-          path: 'login',
+          path: pathUrl.login,
           element: (
             <RegisterLayout>
               <Login />
@@ -32,7 +33,7 @@ export default function useRouteElement() {
           )
         },
         {
-          path: 'register',
+          path: pathUrl.register,
           element: (
             <RegisterLayout>
               <Register />
@@ -46,7 +47,7 @@ export default function useRouteElement() {
       element: <ProtectedRoute />,
       children: [
         {
-          path: 'profile',
+          path: pathUrl.profile,
           element: (
             <MainLayout>
               <Profile />

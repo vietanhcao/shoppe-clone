@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { logout } from '../../apis/auth.api'
 import Popover from '../Popover'
 import useGlobalStore from '../../store/useGlobalStore'
+import pathUrl from '../../constants/pathUrl'
 
 export default function Header() {
   const store = useGlobalStore()
@@ -26,7 +27,7 @@ export default function Header() {
       <div className='container'>
         <div className='flex justify-end pb-3'>
           <Popover
-            className='flex items-center py-1 hover:text-gray:300 cursor-pointer'
+            className='flex items-center py-1 hover:text-white/70 cursor-pointer'
             renderPopover={
               <div className='bg-white relative shadow-md rounded-sm border border-gray-200 pr-32 text-sm'>
                 <div className='flex flex-col py-1 px-3 items-start'>
@@ -65,11 +66,11 @@ export default function Header() {
 
           {isAuthenticated && (
             <Popover
-              className='flex items-center py-1 hover:text-gray:300 cursor-pointer ml-6'
+              className='flex items-center py-1 hover:text-white/70 cursor-pointer ml-6'
               renderPopover={
                 <div className='shadow-md rounded-sm bg-white relative border-gray-200Ï '>
                   <Link
-                    to='/profile'
+                    to={pathUrl.profile}
                     className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'
                   >
                     Tài khoản của tôi
@@ -96,17 +97,17 @@ export default function Header() {
                   className='w-full h-full object-cover rounded-full'
                 />
               </div>
-              <div>viet anh</div>
+              <div>{store.profile?.email}</div>
             </Popover>
           )}
 
           {!isAuthenticated && (
             <div className='flex flex-center py-1'>
-              <Link to='/register' className='mx-3 capitalize hover:text-white hover:opacity-70'>
+              <Link to={pathUrl.register} className='mx-3 capitalize hover:text-white hover:opacity-70'>
                 Đăng ký
               </Link>
               <div className='border-r-[1px] border-r-white/50 h-5' />
-              <Link to='/login' className='mx-3 capitalize hover:text-white hover:opacity-70'>
+              <Link to={pathUrl.login} className='mx-3 capitalize hover:text-white hover:opacity-70'>
                 Đăng nhập
               </Link>
             </div>
