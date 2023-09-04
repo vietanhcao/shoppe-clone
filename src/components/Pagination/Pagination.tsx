@@ -1,8 +1,10 @@
 import classNames from 'classnames'
+import { QueryConfig } from '../../pages/ProductList/ProductList'
+import { Link, createSearchParams } from 'react-router-dom'
+import pathUrl from '../../constants/pathUrl'
 
 interface PaginationProps {
-  page: number
-  setPage: React.Dispatch<React.SetStateAction<number>>
+  queryConfig: QueryConfig
   pageSize: number
 }
 
@@ -29,7 +31,9 @@ Với range = 2 áp dụng cho khoảng cách đầu, cuối và xung quanh curr
 
 const RANGE = 2
 
-export default function Pagination({ page, setPage, pageSize }: PaginationProps) {
+export default function Pagination({ queryConfig, pageSize }: PaginationProps) {
+  const page = Number(queryConfig.page)
+
   const renderPagination = () => {
     let dotAfter = false
     let dotBefore = false
@@ -37,12 +41,12 @@ export default function Pagination({ page, setPage, pageSize }: PaginationProps)
       if (!dotBefore) {
         dotBefore = true
         return (
-          <button
+          <span
             key={index}
-            className='mx-2 px-3 py-2 bg-white text-gray-500 hover:bg-gray-200 rounded shadow-sm  cursor-pointer border'
+            className='mx-2 rounded border bg-white px-3 py-2 text-gray-500  shadow-sm hover:bg-gray-200'
           >
             ...
-          </button>
+          </span>
         )
       }
       return null
@@ -52,12 +56,12 @@ export default function Pagination({ page, setPage, pageSize }: PaginationProps)
       if (!dotAfter) {
         dotAfter = true
         return (
-          <button
+          <span
             key={index}
-            className='mx-2 px-3 py-2 bg-white text-gray-500 hover:bg-gray-200 rounded shadow-sm  cursor-pointer border'
+            className='mx-2 rounded border bg-white px-3 py-2 text-gray-500  shadow-sm hover:bg-gray-200'
           >
             ...
-          </button>
+          </span>
         )
       }
       return null
@@ -79,31 +83,64 @@ export default function Pagination({ page, setPage, pageSize }: PaginationProps)
       }
 
       return (
-        <button
+        <Link
+          to={{
+            pathname: pathUrl.home,
+            search: createSearchParams({
+              ...queryConfig,
+              page: pageNumber.toString()
+            }).toString()
+          }}
           key={index}
           className={classNames(
-            `mx-2 px-3 py-2 bg-white text-gray-500 hover:bg-gray-200 rounded shadow-sm  cursor-pointer border`,
+            `mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-gray-500  shadow-sm hover:bg-gray-200`,
             {
               'border-cyan-500': pageNumber === page,
               'border-transparent': pageNumber !== page
             }
           )}
-          onClick={() => setPage(pageNumber)}
+          // onClick={() => setPage(pageNumber)}
         >
           {pageNumber}
-        </button>
+        </Link>
       )
     })
   }
   return (
-    <div className='flex flex-wrap mt-6 justify-center'>
-      <button className='mx-2 px-3 py-2 bg-white text-gray-500 hover:bg-gray-200 rounded shadow-sm  cursor-pointer border'>
+    <div className='mt-6 flex flex-wrap justify-center'>
+      <Link
+        to={{
+          pathname: pathUrl.home,
+          search: createSearchParams({
+            ...queryConfig,
+            page: (page - 1).toString()
+          }).toString()
+        }}
+        className={classNames('mx-2  rounded border bg-white px-3 py-2 text-gray-500  shadow-sm ', {
+          'pointer-events-none': page === 1,
+          'cursor-not-allowed': page === 1,
+          'hover:bg-gray-200': page !== 1
+        })}
+      >
         Prev
-      </button>
+      </Link>
       {renderPagination()}
-      <button className='mx-2 px-3 py-2 bg-white text-gray-500 hover:bg-gray-200 rounded shadow-sm  cursor-pointer border'>
+      <Link
+        to={{
+          pathname: pathUrl.home,
+          search: createSearchParams({
+            ...queryConfig,
+            page: (page + 1).toString()
+          }).toString()
+        }}
+        className={classNames('mx-2 rounded border bg-white px-3 py-2 text-gray-500  shadow-sm ', {
+          'cursor-not-allowed': page === pageSize,
+          'pointer-events-none': page === pageSize,
+          'hover:bg-gray-200': page !== pageSize
+        })}
+      >
         Next
-      </button>
+      </Link>
     </div>
   )
 }
