@@ -1,12 +1,73 @@
-import { Link } from 'react-router-dom'
-import pathUrl from '../../../constants/pathUrl'
-import Input from '../../../components/Input/Input'
+import { yupResolver } from '@hookform/resolvers/yup'
+import classNames from 'classnames'
+import { isEmpty, omit, omitBy } from 'lodash'
+import { Controller, useForm } from 'react-hook-form'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from '../../../components/Button/Button'
+import InputNumber from '../../../components/InputNumber/InputNumber'
+import pathUrl from '../../../constants/pathUrl'
+import { Schema, schema } from '../../../libs/rules'
+import { Category } from '../../../types/category.type'
+import { QueryConfig } from '../ProductList'
 
-export default function AsideFilter() {
+interface AsideFilterProps {
+  categories: Category[]
+  queryConfig: QueryConfig
+}
+
+type FormData = Pick<Schema, 'price_max' | 'price_min'>
+
+const priceSchema = schema.pick(['price_min', 'price_max'])
+
+export default function AsideFilter({ categories, queryConfig }: AsideFilterProps) {
+  const { category } = queryConfig
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      price_min: '',
+      price_max: ''
+    },
+    resolver: yupResolver(priceSchema),
+    shouldFocusError: false
+  })
+  const navigate = useNavigate()
+
+  const onSubmit = (data: FormData) => {
+    navigate({
+      pathname: pathUrl.home,
+      search: createSearchParams(
+        omitBy(
+          {
+            ...queryConfig,
+            price_max: data.price_max ? data.price_max : '',
+            price_min: data.price_min ? data.price_min : ''
+          },
+          isEmpty
+        )
+      ).toString()
+    })
+  }
+
   return (
     <div className='py-4'>
-      <Link to={pathUrl.home} className='flex items-center font-bold'>
+      <Link
+        to={{
+          pathname: pathUrl.home,
+          search: createSearchParams(
+            omit(
+              {
+                ...queryConfig
+              },
+              ['order', 'category']
+            )
+          ).toString()
+        }}
+        className={classNames('flex items-center font-bold', { 'text-orange': !category })}
+      >
         <svg viewBox='0 0 12 10' className='mr-3 h-4 w-3 fill-current'>
           <g fillRule='evenodd' stroke='none' strokeWidth={1}>
             <g transform='translate(-373 -208)'>
@@ -22,25 +83,43 @@ export default function AsideFilter() {
         </svg>
         Tất cả danh mục
       </Link>
-      <div className='bg-gray-300 h-[1px] my-4' />
+      <div className='my-4 h-[1px] bg-gray-300' />
       <ul>
-        <li className='py-2 pl-2'>
-          <Link to={pathUrl.home} className='relative px-2 text-orange font-semibold'>
-            <svg viewBox='0 0 4 7' className='absolute top-1 left-[-10px] h-2 w-2 fill-orange'>
-              <polygon points='4 3.5 0 0 0 7' />
-            </svg>
-            Thoi trang nam
-          </Link>
-        </li>
+        {categories.map((categoryItem) => (
+          <li className='py-2 pl-2' key={categoryItem._id}>
+            <Link
+              to={{
+                pathname: pathUrl.home,
+                search: createSearchParams(
+                  omit(
+                    {
+                      ...queryConfig,
+                      category: categoryItem._id
+                    },
+                    ['order']
+                  )
+                ).toString()
+              }}
+              className={classNames('relative px-2 ', { 'font-semibold text-orange': categoryItem._id === category })}
+            >
+              {categoryItem._id === category && (
+                <svg viewBox='0 0 4 7' className='absolute left-[-10px] top-1 h-2 w-2 fill-orange'>
+                  <polygon points='4 3.5 0 0 0 7' />
+                </svg>
+              )}
+              {categoryItem.name}
+            </Link>
+          </li>
+        ))}
       </ul>
 
-      <Link to={pathUrl.home} className='flex items-center font-bold mt-4 uppercase'>
+      <Link to={pathUrl.home} className='mt-4 flex items-center font-bold uppercase'>
         <svg
           enableBackground='new 0 0 15 15'
           viewBox='0 0 15 15'
           x={0}
           y={0}
-          className='w-3 h-4 mr-3 fill-current stroke-current '
+          className='mr-3 h-4 w-3 fill-current stroke-current '
         >
           <g>
             <polyline
@@ -54,40 +133,67 @@ export default function AsideFilter() {
         </svg>
         Bộ lọc tìm kiếm
       </Link>
-      <div className='bg-gray-300 h-[1px] my-4' />
+      <div className='my-4 h-[1px] bg-gray-300' />
       <div className='my-5'>
         <div>Khoảng giá</div>
-        <form className='mt-2'>
+        <form className='mt-2' onSubmit={handleSubmit(onSubmit)}>
           <div className='flex items-start'>
-            <Input
-              type='text'
-              classNameBoundary='grow'
-              placeholder='₫ TỪ'
-              name='from'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+            <Controller
+              control={control}
+              name='price_min'
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    classNameBoundary='grow'
+                    placeholder='₫ TỪ'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+                    classNameError='hidden'
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      trigger('price_max')
+                    }}
+                  />
+                )
+              }}
             />
+
             <div className='mx-2 mt-2 flex-shrink-0'>-</div>
-            <Input
-              type='text'
-              classNameBoundary='grow'
-              placeholder='₫ ĐẾN'
-              name='to'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+
+            <Controller
+              control={control}
+              name='price_max'
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    classNameBoundary='grow'
+                    placeholder='₫ ĐẾN'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+                    classNameError='hidden'
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      trigger('price_min')
+                    }}
+                  />
+                )
+              }}
             />
           </div>
-          <Button className='w-full p-2 uppercase bg-orange text-white text-sm hover:bg-orange hover:opacity-80 flex justify-center items-center'>
+          <div className={'mt-1 min-h-[1.25rem] text-center text-sm text-red-600'}>{errors.price_max?.message}</div>
+          <Button className='flex w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange hover:opacity-80'>
             Áp dụng
           </Button>
         </form>
       </div>
 
-      <div className='bg-gray-300 h-[1px] my-4' />
+      <div className='my-4 h-[1px] bg-gray-300' />
       <div className='text-sm'>Đánh giá</div>
       <ul className='my-3'>
         <li className='py-1 pl-2'>
           <Link to='' className='flex items-center text-sm'>
             {Array.from({ length: 5 }).map((_, index) => (
-              <svg viewBox='0 0 9.5 8' key={index} className='w-4 h-4 mr-1'>
+              <svg viewBox='0 0 9.5 8' key={index} className='mr-1 h-4 w-4'>
                 <defs>
                   <linearGradient id='ratingStarGradient' x1='50%' x2='50%' y1='0%' y2='100%'>
                     <stop offset={0} stopColor='#ffca11' />
@@ -117,9 +223,9 @@ export default function AsideFilter() {
         </li>
       </ul>
 
-      <div className='bg-gray-300 h-[1px] my-4' />
+      <div className='my-4 h-[1px] bg-gray-300' />
       <div className='my-5 mt-2'>
-        <Button className='w-full p-2 uppercase bg-orange text-white text-sm hover:bg-orange hover:opacity-80 flex justify-center items-center'>
+        <Button className='flex w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange hover:opacity-80'>
           Xoá tất cả
         </Button>
       </div>
