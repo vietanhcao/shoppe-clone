@@ -5,9 +5,9 @@ import productApi from '../../apis/product.api'
 import Pagination from '../../components/Pagination/Pagination'
 import useQueryParams from '../../hooks/useQueryParams'
 import { ProductListConfig } from '../../types/product.type'
-import AsideFilter from './AsideFilter/AsideFilter'
-import Product from './Product/Product'
-import SortProductList from './SortProductList/SortProductList'
+import AsideFilter from './components/AsideFilter/AsideFilter'
+import Product from './components/Product/Product'
+import SortProductList from './components/SortProductList/SortProductList'
 import categoryApi from '../../apis/category.api'
 
 export type QueryConfig = {

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import { Product as ProductType } from '../../../types/product.type'
-import { formatCurrency, formatNumberToSocialStyle } from '../../../libs/utils'
-import ProductRating from '../../../components/ProductRating/ProductRating'
+import { Product as ProductType } from '../../../../types/product.type'
+import { formatCurrency, formatNumberToSocialStyle } from '../../../../libs/utils'
+import ProductRating from '../../../../components/ProductRating/ProductRating'
 
 interface ProductProps {
   product: ProductType
