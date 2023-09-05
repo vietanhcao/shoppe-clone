@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
+import DOMPurify from 'dompurify'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating/ProductRating'
+import QuantityController from '../../components/QuantityController/QuantityController'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from '../../libs/utils'
-import InputNumber from '../../components/InputNumber/InputNumber'
-import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { ProductListConfig } from '../../types/product.type'
+import Product from '../ProductList/components/Product/Product'
 
 export default function ProductDetail() {
+  const [buyCount, setBuyCount] = useState(1)
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
   const { data: productDetailData } = useQuery({
@@ -46,6 +49,14 @@ export default function ProductDetail() {
     }
   }
 
+  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: product?.category._id }
+  const { data: productData } = useQuery({
+    queryKey: ['productList', queryConfig],
+    queryFn: () => productApi.getProducts(queryConfig),
+    enabled: !!product?.category._id,
+    staleTime: 3 * 60 * 1000
+  })
+
   const handleZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const image = imageRef.current as HTMLImageElement
@@ -69,6 +80,10 @@ export default function ProductDetail() {
   const handleRemoveZoom = () => {
     const image = imageRef.current as HTMLImageElement
     image.removeAttribute('style')
+  }
+
+  const handleBuyCount = (value: number) => {
+    setBuyCount(value)
   }
 
   if (!product) return null
@@ -166,38 +181,13 @@ export default function ProductDetail() {
 
               <div className='mt-8 flex items-center'>
                 <div className='capitalize text-gray-500'>Số Lượng</div>
-                <div className='ml-10 flex items-center'>
-                  <button className='flex h-8 w-8 items-center justify-center rounded-l-sm  border border-gray-300 text-gray-600'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='h-4 w-4'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 12h-15' />
-                    </svg>
-                  </button>
-                  <InputNumber
-                    value={1}
-                    classNameBoundary=''
-                    classNameError='hidden'
-                    classNameInput='h-8 w-14 border-t border-b border-gray-300 text-center outline-none'
-                  />
-                  <button className='flex h-8 w-8 items-center justify-center rounded-r-sm  border border-gray-300 text-gray-600'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='h-4 w-4'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M12 4.5v15m7.5-7.5h-15' />
-                    </svg>
-                  </button>
-                </div>
+                <QuantityController
+                  value={buyCount}
+                  onDecrease={handleBuyCount}
+                  onIncrease={handleBuyCount}
+                  onType={handleBuyCount}
+                  max={product.quantity}
+                />
                 <div className='ml-6 text-sm text-gray-500'>{product.quantity} sản phẩm có sẵn</div>
               </div>
 
@@ -249,6 +239,21 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {productData && (
+        <div className='container'>
+          <div className='mt-8 bg-white p-4 shadow'>
+            <div className='rounded bg-gray-50 p-4 text-lg capitalize text-slate-700'>CÓ THỂ BẠN CŨNG THÍCH </div>
+            <div className='mt-6 grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
+              {productData.data.data.products.map((product) => (
+                <div key={product._id} className='col-span-1'>
+                  <Product product={product} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,9 +6,9 @@ import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from '../../../../components/Button/Button'
 import InputNumber from '../../../../components/InputNumber/InputNumber'
 import pathUrl from '../../../../constants/pathUrl'
+import { QueryConfig } from '../../../../hooks/useQueryConfig'
 import { Schema, schema } from '../../../../libs/rules'
 import { Category } from '../../../../types/category.type'
-import { QueryConfig } from '../../ProductList'
 import RatingStars from '../RatingStars/RatingStars'
 
 interface AsideFilterProps {
