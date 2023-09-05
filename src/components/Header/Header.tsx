@@ -4,8 +4,24 @@ import authApi from '../../apis/auth.api'
 import Popover from '../Popover'
 import useGlobalStore from '../../store/useGlobalStore'
 import pathUrl from '../../constants/pathUrl'
+import useQueryConfig from '../../hooks/useQueryConfig'
+import { useForm } from 'react-hook-form'
+import { Schema, schema } from '../../libs/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { omit } from 'lodash'
+
+type FormData = Pick<Schema, 'name'>
+
+const nameSchema = schema.pick(['name'])
 
 export default function Header() {
+  const queryConfig = useQueryConfig()
+  const { register, handleSubmit } = useForm<FormData>({
+    defaultValues: {
+      name: ''
+    },
+    resolver: yupResolver(nameSchema)
+  })
   const store = useGlobalStore()
   const navigate = useNavigate()
 
@@ -22,17 +38,36 @@ export default function Header() {
     logoutMutation.mutate()
   }
 
+  const onSubmitSearch = handleSubmit((data) => {
+    const config = queryConfig.order
+      ? omit(
+          {
+            ...queryConfig,
+            name: data.name
+          },
+          ['order', 'sort_by']
+        )
+      : omit({
+          ...queryConfig,
+          name: data.name
+        })
+    navigate({
+      pathname: pathUrl.home,
+      search: new URLSearchParams(config).toString()
+    })
+  })
+
   return (
-    <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white text-sm'>
+    <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-sm text-white'>
       <div className='container'>
         <div className='flex justify-end pb-3'>
           <Popover
-            className='flex items-center py-1 hover:text-white/70 cursor-pointer'
+            className='flex cursor-pointer items-center py-1 hover:text-white/70'
             renderPopover={
-              <div className='bg-white relative shadow-md rounded-sm border border-gray-200 pr-32 text-sm'>
-                <div className='flex flex-col py-1 px-3 items-start'>
-                  <button className='py-1 px-1 hover:text-orange'>Tiếng Việt</button>
-                  <button className='py-1 px-1 hover:text-orange mt-2'>English</button>
+              <div className='relative rounded-sm border border-gray-200 bg-white pr-32 text-sm shadow-md'>
+                <div className='flex flex-col items-start px-3 py-1'>
+                  <button className='px-1 py-1 hover:text-orange'>Tiếng Việt</button>
+                  <button className='mt-2 px-1 py-1 hover:text-orange'>English</button>
                 </div>
               </div>
             }
@@ -43,7 +78,7 @@ export default function Header() {
               viewBox='0 0 24 24'
               strokeWidth={1.5}
               stroke='currentColor'
-              className='w-5 h-5'
+              className='h-5 w-5'
             >
               <path
                 strokeLinecap='round'
@@ -58,7 +93,7 @@ export default function Header() {
               viewBox='0 0 24 24'
               strokeWidth={1.5}
               stroke='currentColor'
-              className='w-5 h-5'
+              className='h-5 w-5'
             >
               <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
             </svg>
@@ -66,23 +101,23 @@ export default function Header() {
 
           {isAuthenticated && (
             <Popover
-              className='flex items-center py-1 hover:text-white/70 cursor-pointer ml-6'
+              className='ml-6 flex cursor-pointer items-center py-1 hover:text-white/70'
               renderPopover={
-                <div className='shadow-md rounded-sm bg-white relative border-gray-200Ï '>
+                <div className='border-gray-200Ï relative rounded-sm bg-white shadow-md '>
                   <Link
                     to={pathUrl.profile}
-                    className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'
+                    className='block w-full bg-white px-4 py-3 text-sm hover:bg-slate-100 hover:text-cyan-500'
                   >
                     Tài khoản của tôi
                   </Link>
                   <Link
                     to='/'
-                    className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500'
+                    className='block w-full bg-white px-4 py-3 text-sm hover:bg-slate-100 hover:text-cyan-500'
                   >
                     Đơn mua
                   </Link>
                   <button
-                    className='text-sm w-full py-3 px-4 block hover:bg-slate-100 bg-white hover:text-cyan-500 text-left'
+                    className='block w-full bg-white px-4 py-3 text-left text-sm hover:bg-slate-100 hover:text-cyan-500'
                     onClick={handleLogout}
                   >
                     Đăng xuất
@@ -90,11 +125,11 @@ export default function Header() {
                 </div>
               }
             >
-              <div className='w-5 h-5 mr-2 flex-shrink-0'>
+              <div className='mr-2 h-5 w-5 flex-shrink-0'>
                 <img
                   src='https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
                   alt='avatar'
-                  className='w-full h-full object-cover rounded-full'
+                  className='h-full w-full rounded-full object-cover'
                 />
               </div>
               <div>{store.profile?.email}</div>
@@ -102,18 +137,18 @@ export default function Header() {
           )}
 
           {!isAuthenticated && (
-            <div className='flex flex-center py-1'>
+            <div className='flex-center flex py-1'>
               <Link to={pathUrl.register} className='mx-3 capitalize hover:text-white hover:opacity-70'>
                 Đăng ký
               </Link>
-              <div className='border-r-[1px] border-r-white/50 h-5' />
+              <div className='h-5 border-r-[1px] border-r-white/50' />
               <Link to={pathUrl.login} className='mx-3 capitalize hover:text-white hover:opacity-70'>
                 Đăng nhập
               </Link>
             </div>
           )}
         </div>
-        <div className='grid grid-cols-12 gap-4 items-end'>
+        <div className='grid grid-cols-12 items-end gap-4'>
           <Link to='/' className='col-span-2'>
             <svg viewBox='0 0 192 65' className='h-11 w-full fill-white lg:h-11'>
               <g fillRule='evenodd'>
@@ -121,21 +156,21 @@ export default function Header() {
               </g>
             </svg>
           </Link>
-          <form className='col-span-9'>
-            <div className='bg-white rounded-sm p-1 flex'>
+          <form className='col-span-9' onSubmit={onSubmitSearch}>
+            <div className='flex rounded-sm bg-white p-1'>
               <input
                 type='text'
-                name='search'
-                className='text-black px-3 py-1 flex-grow border-none outline-none bg-transparent'
+                className='flex-grow border-none bg-transparent px-3 py-1 text-black outline-none'
+                {...register('name')}
               ></input>
-              <button className='rounded-sm flex-shrink-0 text-white py-1 px-6 bg-orange hover:opacity-90'>
+              <button className='flex-shrink-0 rounded-sm bg-orange px-6 py-1 text-white hover:opacity-90'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
                   strokeWidth={1.5}
                   stroke='currentColor'
-                  className='w-6 h-6'
+                  className='h-6 w-6'
                 >
                   <path
                     strokeLinecap='round'
@@ -149,19 +184,19 @@ export default function Header() {
           <div className='col-span-1 justify-self-center'>
             <Popover
               renderPopover={
-                <div className='shadow-md rounded-sm bg-white relative border-gray-200 max-w-[400px] text-sm'>
+                <div className='relative max-w-[400px] rounded-sm border-gray-200 bg-white text-sm shadow-md'>
                   <div className='p-2'>
-                    <div className='text-gray-400 capitalize'>Sản phẩm mới thêm</div>
+                    <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
                     <div className='mt-5'>
                       <div className='mt-4 flex'>
                         <div className='flex-shrink-0'>
                           <img
                             src={'https://down-vn.img.susercontent.com/file/17fa3384d73d2b3378d12c1d2cbb789c_tn'}
                             alt='ảnh'
-                            className='w-11 h-11 object-cover rounded-sm'
+                            className='h-11 w-11 rounded-sm object-cover'
                           />
                         </div>
-                        <div className='flex-grow ml-2 overflow-hidden'>
+                        <div className='ml-2 flex-grow overflow-hidden'>
                           <div className='truncate'>
                             Ghế kê chân dành cho Văn Phòng, Công Thái Học.masa chân chống mệt mỏi.
                           </div>
@@ -176,10 +211,10 @@ export default function Header() {
                           <img
                             src={'https://down-vn.img.susercontent.com/file/17fa3384d73d2b3378d12c1d2cbb789c_tn'}
                             alt='ảnh'
-                            className='w-11 h-11 object-cover rounded-sm'
+                            className='h-11 w-11 rounded-sm object-cover'
                           />
                         </div>
-                        <div className='flex-grow ml-2 overflow-hidden'>
+                        <div className='ml-2 flex-grow overflow-hidden'>
                           <div className='truncate'>
                             Ghế kê chân dành cho Văn Phòng, Công Thái Học.masa chân chống mệt mỏi.
                           </div>
@@ -192,7 +227,7 @@ export default function Header() {
 
                     <div className='mt-6 flex items-center justify-end'>
                       {/* <div className='text-sx capitalize'>Sản phẩm xem gần đây</div> */}
-                      <button className='text-xs bg-orange hover:opacity-90 capitalize px-4 py-1 rounded-sm text-white'>
+                      <button className='rounded-sm bg-orange px-4 py-1 text-xs capitalize text-white hover:opacity-90'>
                         Xem giỏ hàng
                       </button>
                     </div>
@@ -206,7 +241,7 @@ export default function Header() {
                 viewBox='0 0 24 24'
                 strokeWidth={1.5}
                 stroke='currentColor'
-                className='w-8 h-8'
+                className='h-8 w-8'
               >
                 <path
                   strokeLinecap='round'

@@ -1,36 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import { isUndefined, omitBy } from 'lodash'
 
+import categoryApi from '../../apis/category.api'
 import productApi from '../../apis/product.api'
 import Pagination from '../../components/Pagination/Pagination'
-import useQueryParams from '../../hooks/useQueryParams'
+import useQueryConfig from '../../hooks/useQueryConfig'
 import { ProductListConfig } from '../../types/product.type'
 import AsideFilter from './components/AsideFilter/AsideFilter'
 import Product from './components/Product/Product'
 import SortProductList from './components/SortProductList/SortProductList'
-import categoryApi from '../../apis/category.api'
-
-export type QueryConfig = {
-  [key in keyof ProductListConfig]: string
-}
 
 export default function ProductList() {
-  const queryParams = useQueryParams()
-  const queryConfig: QueryConfig = omitBy(
-    {
-      page: queryParams.page || '1',
-      limit: queryParams.limit,
-      sort_by: queryParams.sort_by,
-      exclude: queryParams.exclude,
-      name: queryParams.name,
-      order: queryParams.order,
-      price_max: queryParams.price_max,
-      price_min: queryParams.price_min,
-      rating_filter: queryParams.rating_filter,
-      category: queryParams.category
-    },
-    isUndefined
-  )
+  const queryConfig = useQueryConfig()
 
   const { data: productData } = useQuery({
     queryKey: ['productList', queryConfig],
