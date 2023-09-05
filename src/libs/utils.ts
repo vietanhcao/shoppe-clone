@@ -22,8 +22,4 @@ export function formatNumberToSocialStyle(value: number) {
     .toLowerCase()
 }
 
-// cú pháp `-?` sẽ loại bỏ undefiend của key optional
-
-export type NoUndefinedField<T> = {
-  [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>>
-}
+export const rateSale = (original: number, sale: number) => Math.round(((original - sale) / original) * 100) + '%'

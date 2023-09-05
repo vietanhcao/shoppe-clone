@@ -7,6 +7,7 @@ import MainLayout from './layouts/MainLayout'
 import Profile from './pages/Profile'
 import useGlobalStore from './store/useGlobalStore'
 import pathUrl from './constants/pathUrl'
+import ProductDetail from './pages/ProductDetail/ProductDetail'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -55,6 +56,15 @@ export default function useRouteElement() {
           )
         }
       ]
+    },
+    {
+      path: pathUrl.productDetail,
+      index: true,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      )
     },
     {
       path: '',

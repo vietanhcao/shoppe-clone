@@ -3,7 +3,8 @@ const pathUrl = {
   login: '/login',
   register: '/register',
   profile: '/profile',
-  logout: '/logout'
+  logout: '/logout',
+  productDetail: ':id'
 }
 
 export default pathUrl
