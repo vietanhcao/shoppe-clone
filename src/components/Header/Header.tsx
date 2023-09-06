@@ -13,6 +13,7 @@ import { purchasesStatus } from '../../constants/purchase'
 import purchaseApi from '../../apis/purchase.api'
 import noproduct from '../../assets/images/no-product.png'
 import { formatCurrency } from '../../libs/utils'
+import { queryClient } from '../../main'
 
 type FormData = Pick<Schema, 'name'>
 
@@ -36,6 +37,7 @@ export default function Header() {
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
       navigate('/login')
+      queryClient.removeQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
     }
   })
 
@@ -230,9 +232,12 @@ export default function Header() {
                             purchasesInCart.length - MAX_PURCHASES_IN_CART}
                           {' Thêm hàng vào giỏ '}
                         </div>
-                        <button className='rounded-sm bg-orange px-4 py-1 text-xs capitalize text-white hover:opacity-90'>
+                        <Link
+                          to={pathUrl.cart}
+                          className='rounded-sm bg-orange px-4 py-1 text-xs capitalize text-white hover:opacity-90'
+                        >
                           Xem giỏ hàng
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   ) : (
@@ -244,7 +249,7 @@ export default function Header() {
                 </div>
               }
             >
-              <Link to={pathUrl.home} className='relative'>
+              <Link to={pathUrl.cart} className='relative'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
