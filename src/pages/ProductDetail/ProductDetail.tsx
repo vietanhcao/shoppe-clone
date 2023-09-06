@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -8,6 +8,10 @@ import QuantityController from '../../components/QuantityController/QuantityCont
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from '../../libs/utils'
 import { ProductListConfig } from '../../types/product.type'
 import Product from '../ProductList/components/Product/Product'
+import purchaseApi from '../../apis/purchase.api'
+import { queryClient } from '../../main'
+import { purchasesStatus } from '../../constants/purchase'
+import { toast } from 'react-hot-toast'
 
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
@@ -57,6 +61,10 @@ export default function ProductDetail() {
     staleTime: 3 * 60 * 1000
   })
 
+  const addToCartMutation = useMutation({
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchaseApi.addToCart(body)
+  })
+
   const handleZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const image = imageRef.current as HTMLImageElement
@@ -84,6 +92,18 @@ export default function ProductDetail() {
 
   const handleBuyCount = (value: number) => {
     setBuyCount(value)
+  }
+
+  const handleAddToCart = () => {
+    addToCartMutation.mutate(
+      { product_id: product?._id as string, buy_count: buyCount },
+      {
+        onSuccess: () => {
+          toast.success('Thêm vào giỏ hàng thành công')
+          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
+        }
+      }
+    )
   }
 
   if (!product) return null
@@ -192,7 +212,10 @@ export default function ProductDetail() {
               </div>
 
               <div className='mt-8 flex items-center'>
-                <button className='flex h-12 items-center justify-center rounded-sm border-orange bg-orange/10 px-3 capitalize text-orange hover:bg-orange/5'>
+                <button
+                  className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-3 capitalize text-orange hover:bg-orange/5'
+                  onClick={handleAddToCart}
+                >
                   <svg
                     enableBackground='new 0 0 15 15'
                     viewBox='0 0 15 15'

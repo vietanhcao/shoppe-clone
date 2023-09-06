@@ -7,7 +7,7 @@ import App from './App'
 import './index.css'
 import ToasterProvider from './providers/ToasterProvider'
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false

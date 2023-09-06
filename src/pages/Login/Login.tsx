@@ -52,9 +52,9 @@ export default function Login() {
   return (
     <div className='bg-orange'>
       <div className='container'>
-        <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
+        <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
-            <form className='p-10 rounded bg-white shadow-sm' onSubmit={handleSubmit(onSubmit)}>
+            <form className='rounded bg-white p-10 shadow-sm' onSubmit={handleSubmit(onSubmit)}>
               <div className='text-2xl'>Đăng nhập</div>
               <Input
                 type='email'
@@ -75,16 +75,16 @@ export default function Login() {
               <div className='mt-3'>
                 <Button
                   type='submit'
-                  className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'
+                  className='w-full bg-red-500 px-2 py-4 text-center text-sm uppercase text-white hover:bg-red-600'
                   isLoading={loginAccountMutation.isLoading}
                   disabled={loginAccountMutation.isLoading}
                 >
                   Đăng nhập
                 </Button>
               </div>
-              <div className='flex items-center justify-center mt-8 '>
+              <div className='mt-8 flex items-center justify-center '>
                 <span className='text-slate-300'>Bạn chưa có tài khoản?</span>
-                <Link to={pathUrl.register} className='text-red-400 ml-2'>
+                <Link to={pathUrl.register} className='ml-2 text-red-400'>
                   Đăng ký
                 </Link>
               </div>

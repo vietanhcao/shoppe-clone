@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import authApi from '../../apis/auth.api'
 import Popover from '../Popover'
@@ -9,10 +9,15 @@ import { useForm } from 'react-hook-form'
 import { Schema, schema } from '../../libs/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
+import { purchasesStatus } from '../../constants/purchase'
+import purchaseApi from '../../apis/purchase.api'
+import noproduct from '../../assets/images/no-product.png'
+import { formatCurrency } from '../../libs/utils'
 
 type FormData = Pick<Schema, 'name'>
 
 const nameSchema = schema.pick(['name'])
+const MAX_PURCHASES_IN_CART = 5
 
 export default function Header() {
   const queryConfig = useQueryConfig()
@@ -33,6 +38,16 @@ export default function Header() {
       navigate('/login')
     }
   })
+
+  // khi chuyển trang Header chỉ bị render ko bị unmount - mount lại trừ trường hơp logout
+  // nên query này ko bị inactive ko cần set staleTime
+  const { data: purchasesInCartData } = useQuery({
+    queryKey: ['purchase', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
+  })
+
+  const purchasesInCart = purchasesInCartData?.data.data
 
   const handleLogout = () => {
     logoutMutation.mutate()
@@ -185,70 +200,71 @@ export default function Header() {
             <Popover
               renderPopover={
                 <div className='relative max-w-[400px] rounded-sm border-gray-200 bg-white text-sm shadow-md'>
-                  <div className='p-2'>
-                    <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
-                    <div className='mt-5'>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src={'https://down-vn.img.susercontent.com/file/17fa3384d73d2b3378d12c1d2cbb789c_tn'}
-                            alt='ảnh'
-                            className='h-11 w-11 rounded-sm object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Ghế kê chân dành cho Văn Phòng, Công Thái Học.masa chân chống mệt mỏi.
+                  {purchasesInCart ? (
+                    <div className='p-2'>
+                      <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
+                      <div className='mt-5'>
+                        {purchasesInCart.slice(0, MAX_PURCHASES_IN_CART).map((purchase) => (
+                          <div className='mt-2 flex p-2 hover:bg-gray-100' key={purchase._id}>
+                            <div className='flex-shrink-0'>
+                              <img
+                                src={purchase.product.image}
+                                alt={purchase.product.name}
+                                className='h-11 w-11 rounded-sm object-cover'
+                              />
+                            </div>
+                            <div className='ml-2 flex-grow overflow-hidden'>
+                              <div className='truncate'>{purchase.product.name}</div>
+                            </div>
+                            <div className='ml-2 flex-shrink-0'>
+                              <span className='text-orange'>₫{formatCurrency(purchase.product.price)}</span>
+                            </div>
                           </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <span className='text-orange'>₫80.000</span>
-                        </div>
+                        ))}
                       </div>
 
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            src={'https://down-vn.img.susercontent.com/file/17fa3384d73d2b3378d12c1d2cbb789c_tn'}
-                            alt='ảnh'
-                            className='h-11 w-11 rounded-sm object-cover'
-                          />
+                      <div className='mt-6 flex items-center justify-between'>
+                        <div className='text-sx capitalize'>
+                          {purchasesInCart &&
+                            purchasesInCart.length > MAX_PURCHASES_IN_CART &&
+                            purchasesInCart.length - MAX_PURCHASES_IN_CART}
+                          {' Thêm hàng vào giỏ '}
                         </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>
-                            Ghế kê chân dành cho Văn Phòng, Công Thái Học.masa chân chống mệt mỏi.
-                          </div>
-                        </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <span className='text-orange'>₫80.000</span>
-                        </div>
+                        <button className='rounded-sm bg-orange px-4 py-1 text-xs capitalize text-white hover:opacity-90'>
+                          Xem giỏ hàng
+                        </button>
                       </div>
                     </div>
-
-                    <div className='mt-6 flex items-center justify-end'>
-                      {/* <div className='text-sx capitalize'>Sản phẩm xem gần đây</div> */}
-                      <button className='rounded-sm bg-orange px-4 py-1 text-xs capitalize text-white hover:opacity-90'>
-                        Xem giỏ hàng
-                      </button>
+                  ) : (
+                    <div className='flex h-[300px] w-[300px] flex-col items-center justify-center p-2'>
+                      <img src={noproduct} alt='no purchase' className='h-24 w-24' />
+                      <div className='mt-3 capitalize text-gray-400'>Chưa có sản phẩm </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               }
             >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='h-8 w-8'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
-                />
-              </svg>
+              <Link to={pathUrl.home} className='relative'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='h-8 w-8'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
+                  />
+                </svg>
+                {purchasesInCart && (
+                  <span className='absolute right-[-13px] top-[-6px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange'>
+                    {purchasesInCart.length}
+                  </span>
+                )}
+              </Link>
             </Popover>
           </div>
         </div>
