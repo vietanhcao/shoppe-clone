@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating/ProductRating'
 import QuantityController from '../../components/QuantityController/QuantityController'
@@ -12,11 +12,13 @@ import purchaseApi from '../../apis/purchase.api'
 import { queryClient } from '../../main'
 import { purchasesStatus } from '../../constants/purchase'
 import { toast } from 'react-hot-toast'
+import pathUrl from '../../constants/pathUrl'
 
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
+  const navigate = useNavigate()
   const { data: productDetailData } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetail(id as string)
@@ -101,6 +103,21 @@ export default function ProductDetail() {
         onSuccess: () => {
           toast.success('Thêm vào giỏ hàng thành công')
           queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
+        }
+      }
+    )
+  }
+
+  const buyNow = async () => {
+    const res = await addToCartMutation.mutateAsync({ product_id: product?._id as string, buy_count: buyCount })
+    const purchase = res.data.data
+    navigate(
+      {
+        pathname: pathUrl.cart
+      },
+      {
+        state: {
+          purchaseId: purchase._id
         }
       }
     )
@@ -241,7 +258,10 @@ export default function ProductDetail() {
                   </svg>
                   Thêm vào giỏ hàng
                 </button>
-                <button className='ml-4 flex h-12 items-center justify-center rounded-sm border-orange bg-orange px-3 capitalize text-white shadow-sm outline-none hover:bg-orange/90'>
+                <button
+                  onClick={buyNow}
+                  className='ml-4 flex h-12 items-center justify-center rounded-sm border-orange bg-orange px-3 capitalize text-white shadow-sm outline-none hover:bg-orange/90'
+                >
                   Mua Ngay
                 </button>
               </div>
