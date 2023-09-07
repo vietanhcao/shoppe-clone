@@ -9,6 +9,7 @@ import useGlobalStore from './store/useGlobalStore'
 import pathUrl from './constants/pathUrl'
 import ProductDetail from './pages/ProductDetail/ProductDetail'
 import Cart from './pages/Cart/Cart'
+import CartLayout from './layouts/CartLayout/CartLayout'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -59,9 +60,9 @@ export default function useRouteElement() {
         {
           path: pathUrl.cart,
           element: (
-            <MainLayout>
+            <CartLayout>
               <Cart />
-            </MainLayout>
+            </CartLayout>
           )
         }
       ]

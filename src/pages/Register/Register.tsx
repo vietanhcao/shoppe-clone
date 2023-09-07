@@ -49,10 +49,10 @@ export default function Register() {
   }
   return (
     <div className='bg-orange'>
-      <div className='max-w-7xl mx-auto px-4'>
-        <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
+      <div className='mx-auto max-w-7xl px-4'>
+        <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
-            <form className='p-10 rounded bg-white shadow-sm' onSubmit={handleSubmit(onSubmit)} noValidate>
+            <form className='rounded bg-white p-10 shadow-sm' onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className='text-2xl'>Đăng ký</div>
               <Input
                 type='email'
@@ -83,16 +83,16 @@ export default function Register() {
               <div className='mt-2'>
                 <Button
                   type='submit'
-                  className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'
+                  className='w-full bg-red-500 px-2 py-4 text-center text-sm uppercase text-white hover:bg-red-600'
                   isLoading={regtisterAccountMutation.isLoading}
                   disabled={regtisterAccountMutation.isLoading}
                 >
                   Đăng ký
                 </Button>
               </div>
-              <div className='flex items-center justify-center mt-8 '>
+              <div className='mt-8 flex items-center justify-center '>
                 <span className='text-slate-300'>Bạn đã có tài khoản?</span>
-                <Link to={pathUrl.login} className='text-red-400 ml-2'>
+                <Link to={pathUrl.login} className='ml-2 text-red-400'>
                   Đăng nhập
                 </Link>
               </div>

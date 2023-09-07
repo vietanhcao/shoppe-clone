@@ -1,45 +1,22 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
-import authApi from '../../apis/auth.api'
-import Popover from '../Popover'
-import useGlobalStore from '../../store/useGlobalStore'
-import pathUrl from '../../constants/pathUrl'
-import useQueryConfig from '../../hooks/useQueryConfig'
-import { useForm } from 'react-hook-form'
-import { Schema, schema } from '../../libs/rules'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { omit } from 'lodash'
-import { purchasesStatus } from '../../constants/purchase'
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import purchaseApi from '../../apis/purchase.api'
 import noproduct from '../../assets/images/no-product.png'
+import pathUrl from '../../constants/pathUrl'
+import { purchasesStatus } from '../../constants/purchase'
+import useSearchProducts from '../../hooks/useSearchProducts'
 import { formatCurrency } from '../../libs/utils'
-import { queryClient } from '../../main'
+import useGlobalStore from '../../store/useGlobalStore'
+import NavHeader from '../NavHeader/NavHeader'
+import Popover from '../Popover'
 
-type FormData = Pick<Schema, 'name'>
-
-const nameSchema = schema.pick(['name'])
 const MAX_PURCHASES_IN_CART = 5
 
 export default function Header() {
-  const queryConfig = useQueryConfig()
-  const { register, handleSubmit } = useForm<FormData>({
-    defaultValues: {
-      name: ''
-    },
-    resolver: yupResolver(nameSchema)
-  })
   const store = useGlobalStore()
-  const navigate = useNavigate()
+  const { register, onSubmitSearch } = useSearchProducts()
 
   const isAuthenticated = !!store.accessToken
-
-  const logoutMutation = useMutation({
-    mutationFn: () => authApi.logout(),
-    onSuccess: () => {
-      navigate('/login')
-      queryClient.removeQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
-    }
-  })
 
   // khi chuyển trang Header chỉ bị render ko bị unmount - mount lại trừ trường hơp logout
   // nên query này ko bị inactive ko cần set staleTime
@@ -51,120 +28,10 @@ export default function Header() {
 
   const purchasesInCart = purchasesInCartData?.data.data
 
-  const handleLogout = () => {
-    logoutMutation.mutate()
-  }
-
-  const onSubmitSearch = handleSubmit((data) => {
-    const config = queryConfig.order
-      ? omit(
-          {
-            ...queryConfig,
-            name: data.name
-          },
-          ['order', 'sort_by']
-        )
-      : omit({
-          ...queryConfig,
-          name: data.name
-        })
-    navigate({
-      pathname: pathUrl.home,
-      search: new URLSearchParams(config).toString()
-    })
-  })
-
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-sm text-white'>
       <div className='container'>
-        <div className='flex justify-end pb-3'>
-          <Popover
-            className='flex cursor-pointer items-center py-1 hover:text-white/70'
-            renderPopover={
-              <div className='relative rounded-sm border border-gray-200 bg-white pr-32 text-sm shadow-md'>
-                <div className='flex flex-col items-start px-3 py-1'>
-                  <button className='px-1 py-1 hover:text-orange'>Tiếng Việt</button>
-                  <button className='mt-2 px-1 py-1 hover:text-orange'>English</button>
-                </div>
-              </div>
-            }
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='h-5 w-5'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418'
-              />
-            </svg>
-            <span className='mx-1'>Tiếng Việt</span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='h-5 w-5'
-            >
-              <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-            </svg>
-          </Popover>
-
-          {isAuthenticated && (
-            <Popover
-              className='ml-6 flex cursor-pointer items-center py-1 hover:text-white/70'
-              renderPopover={
-                <div className='border-gray-200Ï relative rounded-sm bg-white shadow-md '>
-                  <Link
-                    to={pathUrl.profile}
-                    className='block w-full bg-white px-4 py-3 text-sm hover:bg-slate-100 hover:text-cyan-500'
-                  >
-                    Tài khoản của tôi
-                  </Link>
-                  <Link
-                    to='/'
-                    className='block w-full bg-white px-4 py-3 text-sm hover:bg-slate-100 hover:text-cyan-500'
-                  >
-                    Đơn mua
-                  </Link>
-                  <button
-                    className='block w-full bg-white px-4 py-3 text-left text-sm hover:bg-slate-100 hover:text-cyan-500'
-                    onClick={handleLogout}
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              }
-            >
-              <div className='mr-2 h-5 w-5 flex-shrink-0'>
-                <img
-                  src='https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
-                  alt='avatar'
-                  className='h-full w-full rounded-full object-cover'
-                />
-              </div>
-              <div>{store.profile?.email}</div>
-            </Popover>
-          )}
-
-          {!isAuthenticated && (
-            <div className='flex-center flex py-1'>
-              <Link to={pathUrl.register} className='mx-3 capitalize hover:text-white hover:opacity-70'>
-                Đăng ký
-              </Link>
-              <div className='h-5 border-r-[1px] border-r-white/50' />
-              <Link to={pathUrl.login} className='mx-3 capitalize hover:text-white hover:opacity-70'>
-                Đăng nhập
-              </Link>
-            </div>
-          )}
-        </div>
+        <NavHeader />
         <div className='grid grid-cols-12 items-end gap-4'>
           <Link to='/' className='col-span-2'>
             <svg viewBox='0 0 192 65' className='h-11 w-full fill-white lg:h-11'>
