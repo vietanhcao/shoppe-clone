@@ -53,6 +53,11 @@ class Http {
           const message = data?.message || 'Có lỗi xảy ra'
           toast.error(message)
         }
+        if (error.response?.status === HttpStatusCode.Unauthorized) {
+          this.accessToken = ''
+          useGlobalStore.getState().setAccessToken('')
+          useGlobalStore.getState().setProfile(null)
+        }
         return Promise.reject(error)
       }
     )

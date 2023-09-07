@@ -1,14 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom'
 import pathUrl from '../../constants/pathUrl'
 import Popover from '../Popover'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import authApi from '../../apis/auth.api'
 import { purchasesStatus } from '../../constants/purchase'
-import { queryClient } from '../../main'
 import useGlobalStore from '../../store/useGlobalStore'
 
 export default function NavHeader() {
   const store = useGlobalStore()
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const isAuthenticated = !!store.accessToken
   const logoutMutation = useMutation({
