@@ -1,10 +1,11 @@
-import { InputHTMLAttributes, useState } from 'react'
+import React, { InputHTMLAttributes, useState } from 'react'
 import InputNumber from '../InputNumber/InputNumber'
 
 interface QuantityControllerProps extends InputHTMLAttributes<HTMLInputElement> {
   max?: number
   onIncrease?: (value: number) => void
   onDecrease?: (value: number) => void
+  onFocusOut?: (value: number) => void
   onType?: (value: number) => void
   classNameWarpper?: string
 }
@@ -14,6 +15,7 @@ export default function QuantityController({
   onIncrease,
   onDecrease,
   onType,
+  onFocusOut,
   classNameWarpper = 'ml-10',
   value,
   ...rest
@@ -49,6 +51,18 @@ export default function QuantityController({
     setLocalValue(_value)
   }
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    // let _value = Number(e.target.value || localValue) + 1
+    // if (max !== undefined && _value > max) {
+    //   _value = max
+    // } else if (_value < 1) {
+    //   _value = 1
+    // }
+
+    onFocusOut && onFocusOut(Number(e.target.value))
+    // setLocalValue(_value)
+  }
+
   return (
     <div className={classNameWarpper + ' flex items-center'}>
       <button
@@ -71,6 +85,7 @@ export default function QuantityController({
         classNameError='hidden'
         classNameInput='h-8 w-14 border-t border-b border-gray-300 text-center outline-none'
         onChange={handleChange}
+        onBlur={handleBlur}
         value={value || localValue}
         {...rest}
       />
