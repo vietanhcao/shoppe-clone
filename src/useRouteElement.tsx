@@ -4,7 +4,6 @@ import Login from './pages/Login'
 import ProductList from './pages/ProductList'
 import Register from './pages/Register'
 import MainLayout from './layouts/MainLayout'
-import Profile from './pages/Profile'
 import useGlobalStore from './store/useGlobalStore'
 import pathUrl from './constants/pathUrl'
 import ProductDetail from './pages/ProductDetail/ProductDetail'
@@ -12,6 +11,7 @@ import Cart from './pages/Cart/Cart'
 import CartLayout from './layouts/CartLayout/CartLayout'
 import UserLayout from './pages/User/layouts/UserLayout/UserLayout'
 import ChangePassword from './pages/User/pages/ChangePassword/ChangePassword'
+import Profile from './pages/User/pages/Profile/Profile'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
