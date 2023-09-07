@@ -10,6 +10,8 @@ import pathUrl from './constants/pathUrl'
 import ProductDetail from './pages/ProductDetail/ProductDetail'
 import Cart from './pages/Cart/Cart'
 import CartLayout from './layouts/CartLayout/CartLayout'
+import UserLayout from './pages/User/layouts/UserLayout/UserLayout'
+import ChangePassword from './pages/User/pages/ChangePassword/ChangePassword'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -50,20 +52,31 @@ export default function useRouteElement() {
       element: <ProtectedRoute />,
       children: [
         {
-          path: pathUrl.profile,
-          element: (
-            <MainLayout>
-              <Profile />
-            </MainLayout>
-          )
-        },
-        {
           path: pathUrl.cart,
           element: (
             <CartLayout>
               <Cart />
             </CartLayout>
           )
+        },
+
+        {
+          path: pathUrl.user,
+          element: (
+            <MainLayout>
+              <UserLayout />
+            </MainLayout>
+          ),
+          children: [
+            {
+              path: pathUrl.profile,
+              element: <Profile />
+            },
+            {
+              path: pathUrl.changePassowrd,
+              element: <ChangePassword />
+            }
+          ]
         }
       ]
     },

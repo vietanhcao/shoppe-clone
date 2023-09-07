@@ -1,8 +1,11 @@
 const pathUrl = {
   home: '/',
   login: '/login',
+  user: '/user',
   register: '/register',
-  profile: '/profile',
+  profile: '/user/profile',
+  changePassowrd: '/user/password',
+  historyPurchase: '/user/purchase',
   logout: '/logout',
   productDetail: ':nameId',
   cart: '/cart'
