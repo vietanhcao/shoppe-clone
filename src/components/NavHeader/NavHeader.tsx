@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import authApi from '../../apis/auth.api'
 import { purchasesStatus } from '../../constants/purchase'
 import useGlobalStore from '../../store/useGlobalStore'
+import { placeholder } from '../../assets'
 
 export default function NavHeader() {
   const store = useGlobalStore()
@@ -86,7 +87,7 @@ export default function NavHeader() {
         >
           <div className='mr-2 h-5 w-5 flex-shrink-0'>
             <img
-              src='https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
+              src={store.profile?.avatar || placeholder}
               alt='avatar'
               className='h-full w-full rounded-full object-cover'
             />
@@ -94,7 +95,6 @@ export default function NavHeader() {
           <div>{store.profile?.email}</div>
         </Popover>
       )}
-
       {!isAuthenticated && (
         <div className='flex-center flex py-1'>
           <Link to={pathUrl.register} className='mx-3 capitalize hover:text-white hover:opacity-70'>

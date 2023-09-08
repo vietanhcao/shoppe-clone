@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import pathUrl from '../../../../constants/pathUrl'
+import useGlobalStore from '../../../../store/useGlobalStore'
+import { placeholder } from '../../../../assets'
 
 export default function UserSideNav() {
+  const store = useGlobalStore()
   return (
     <div>
       <div className='flex items-center border-b border-b-gray-200 py-4'>
@@ -9,14 +12,10 @@ export default function UserSideNav() {
           to={pathUrl.profile}
           className='h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-black/10'
         >
-          <img
-            src='https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
-            alt='avatar'
-            className='h-full w-full object-cover'
-          />
+          <img src={store.profile?.avatar || placeholder} alt='avatar' className='h-full w-full object-cover' />
         </Link>
         <div className='flex-grow pl-4'>
-          <div className='mb-1 truncate font-semibold text-gray-600'>asdfasdfsa</div>
+          <div className='mb-1 truncate font-semibold text-gray-600'>{store.profile?.email}</div>
           <Link to={pathUrl.profile} className='flex items-center text-gray-500 marker:capitalize'>
             <svg
               xmlns='http://www.w3.org/2000/svg'

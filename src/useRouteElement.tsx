@@ -12,6 +12,7 @@ import CartLayout from './layouts/CartLayout/CartLayout'
 import UserLayout from './pages/User/layouts/UserLayout/UserLayout'
 import ChangePassword from './pages/User/pages/ChangePassword/ChangePassword'
 import Profile from './pages/User/pages/Profile/Profile'
+import HistoryPurchase from './pages/User/pages/HistoryPurchase/HistoryPurchase'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -75,6 +76,10 @@ export default function useRouteElement() {
             {
               path: pathUrl.changePassowrd,
               element: <ChangePassword />
+            },
+            {
+              path: pathUrl.historyPurchase,
+              element: <HistoryPurchase />
             }
           ]
         }
