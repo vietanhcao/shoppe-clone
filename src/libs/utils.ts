@@ -1,4 +1,6 @@
 import { AxiosError, isAxiosError as _isAxiosError, HttpStatusCode } from 'axios'
+import config from './config'
+import { placeholder } from '../assets'
 
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return _isAxiosError(error)
@@ -36,3 +38,6 @@ export const getIdFromNameId = (nameId: string) => {
   const arr = nameId.split('-i-')
   return arr[arr.length - 1]
 }
+
+export const getAvatarUrl = (avatarName?: string) =>
+  avatarName ? `${config.baseUrl}images/${avatarName}` : placeholder

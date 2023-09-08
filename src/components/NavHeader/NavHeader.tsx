@@ -1,11 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom'
-import pathUrl from '../../constants/pathUrl'
-import Popover from '../Popover'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Link, useNavigate } from 'react-router-dom'
 import authApi from '../../apis/auth.api'
+import pathUrl from '../../constants/pathUrl'
 import { purchasesStatus } from '../../constants/purchase'
+import { getAvatarUrl } from '../../libs/utils'
 import useGlobalStore from '../../store/useGlobalStore'
-import { placeholder } from '../../assets'
+import Popover from '../Popover'
 
 export default function NavHeader() {
   const store = useGlobalStore()
@@ -87,7 +87,7 @@ export default function NavHeader() {
         >
           <div className='mr-2 h-5 w-5 flex-shrink-0'>
             <img
-              src={store.profile?.avatar || placeholder}
+              src={getAvatarUrl(store.profile?.avatar)}
               alt='avatar'
               className='h-full w-full rounded-full object-cover'
             />

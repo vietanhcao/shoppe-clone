@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import pathUrl from '../../../../constants/pathUrl'
+import { getAvatarUrl } from '../../../../libs/utils'
 import useGlobalStore from '../../../../store/useGlobalStore'
-import { placeholder } from '../../../../assets'
 
 export default function UserSideNav() {
   const store = useGlobalStore()
@@ -12,7 +12,7 @@ export default function UserSideNav() {
           to={pathUrl.profile}
           className='h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-black/10'
         >
-          <img src={store.profile?.avatar || placeholder} alt='avatar' className='h-full w-full object-cover' />
+          <img src={getAvatarUrl(store.profile?.avatar)} alt='avatar' className='h-full w-full object-cover' />
         </Link>
         <div className='flex-grow pl-4'>
           <div className='mb-1 truncate font-semibold text-gray-600'>{store.profile?.email}</div>

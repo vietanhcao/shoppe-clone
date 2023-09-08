@@ -1,27 +1,37 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
+import userApi from '../../../../apis/user.api'
 import Button from '../../../../components/Button/Button'
 import Input from '../../../../components/Input/Input'
-import userApi from '../../../../apis/user.api'
-import { UserSchema, userSchema } from '../../../../libs/rules'
-import { Controller, useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
 import InputNumber from '../../../../components/InputNumber/InputNumber'
-import { useEffect } from 'react'
-import DateSelect from '../../components/DateSelect/DateSelect'
-import { toast } from 'react-hot-toast'
+import { UserSchema, userSchema } from '../../../../libs/rules'
+import { getAvatarUrl, isAxiosUnprocessableEntityError } from '../../../../libs/utils'
 import useGlobalStore from '../../../../store/useGlobalStore'
-import { placeholder } from '../../../../assets'
+import { ErrorResponse } from '../../../../types/api.type'
+import DateSelect from '../../components/DateSelect/DateSelect'
+import config from '../../../../libs/config'
 
 type FormData = Pick<UserSchema, 'name' | 'phone' | 'address' | 'date_of_birth' | 'avatar'>
+type FormDataError = Omit<FormData, 'date_of_birth'> & { date_of_birth: string }
 
 const profileSchema = userSchema.pick(['name', 'phone', 'address', 'date_of_birth', 'avatar'])
 
 export default function Profile() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const previewImage = useMemo(() => {
+    return file && URL.createObjectURL(file)
+  }, [file])
   const {
     register,
     handleSubmit,
     setValue,
     control,
+    setError,
+    watch,
     formState: { errors }
   } = useForm<FormData>({
     defaultValues: {
@@ -34,12 +44,14 @@ export default function Profile() {
     resolver: yupResolver(profileSchema)
   })
   const updateProfileMutation = useMutation({
-    mutationFn: userApi.updateProfile,
-    onSuccess: () => {
-      alert('Cập nhật thành công')
-    }
+    mutationFn: userApi.updateProfile
+  })
+  const uploadAvatarMutation = useMutation({
+    mutationFn: userApi.uploadAvatar
   })
   const { setProfile } = useGlobalStore()
+
+  const avatar = watch('avatar')
 
   const { data: profileData, refetch } = useQuery({
     queryKey: ['profile'],
@@ -58,15 +70,55 @@ export default function Profile() {
   }, [profile, setValue])
 
   const onSubmit = handleSubmit(async (data: FormData) => {
-    console.log(data)
-    const response = await updateProfileMutation.mutateAsync({
-      ...data,
-      date_of_birth: data.date_of_birth ? data.date_of_birth.toISOString() : new Date(1990, 0, 1).toISOString()
-    })
-    setProfile(response.data.data)
-    refetch()
-    toast.success('Cập nhật thành công')
+    try {
+      let avatarName = avatar
+      if (file) {
+        const formData = new FormData()
+        formData.append('image', file)
+        const response = await uploadAvatarMutation.mutateAsync(formData)
+        avatarName = response.data.data
+        setValue('avatar', avatarName)
+      }
+      const response = await updateProfileMutation.mutateAsync({
+        ...data,
+        date_of_birth: data.date_of_birth ? data.date_of_birth.toISOString() : new Date(1990, 0, 1).toISOString(),
+        avatar: avatarName
+      })
+      toast.success('Cập nhật thành công')
+      setProfile(response.data.data)
+      refetch()
+    } catch (error) {
+      if (isAxiosUnprocessableEntityError<ErrorResponse<FormDataError>>(error)) {
+        const formError = error.response?.data.data
+        if (formError) {
+          Object.keys(formError).forEach((key) => {
+            setError(key as keyof FormDataError, {
+              message: formError[key as keyof FormDataError],
+              type: 'Server'
+            })
+          })
+        }
+      }
+    }
   })
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > config.maxSizeUploadAvatar) {
+      toast.error('Ảnh có kích thước tối đa là 1MB')
+      return
+    }
+    if (!file.type.includes('image')) {
+      toast.error('Ảnh không đúng định dạng')
+      return
+    }
+    setFile(file)
+  }
+
+  const handleUpload = async () => {
+    fileInputRef.current?.click()
+  }
   return (
     <div className='rounded-sm bg-white px-5 pb-10 shadow md:px-7 md:pb-20'>
       <div className='border-b border-b-gray-200 py-6'>
@@ -158,12 +210,25 @@ export default function Profile() {
         <div className='flex justify-center md:w-72 md:border-l md:border-l-gray-200'>
           <div className='flex flex-col items-center'>
             <div className='my-5 h-24 w-24'>
-              <img src={profile?.avatar || placeholder} alt='avatar' className='h-full w-full object-cover' />
+              <img src={previewImage || getAvatarUrl(avatar)} alt='avatar' className='h-full w-full object-cover' />
             </div>
-            <input type='file' className='hidden' accept='.jpg,.jpeg,.png' />
+            <input
+              type='file'
+              className='hidden'
+              accept='.jpg,.jpeg,.png'
+              ref={fileInputRef}
+              onChange={onFileChange}
+              onClick={(e) => {
+                // fix bug: when user upload same image
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const target = e.target as any
+                target.value = null
+              }}
+            />
             <button
               type='button'
               className='flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm'
+              onClick={handleUpload}
             >
               Chọn ảnh
             </button>
