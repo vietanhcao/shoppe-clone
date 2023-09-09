@@ -4,7 +4,7 @@ const pathUrl = {
   user: '/user',
   register: '/register',
   profile: '/user/profile',
-  changePassowrd: '/user/password',
+  changePassword: '/user/password',
   historyPurchase: '/user/purchase',
   logout: '/logout',
   productDetail: ':nameId',

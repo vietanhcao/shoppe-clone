@@ -74,7 +74,7 @@ export default function useRouteElement() {
               element: <Profile />
             },
             {
-              path: pathUrl.changePassowrd,
+              path: pathUrl.changePassword,
               element: <ChangePassword />
             },
             {
