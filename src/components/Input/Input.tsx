@@ -6,6 +6,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   classNameInput?: string
   classNameError?: string
   classNameEye?: string
+  classNameBoundary?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register?: UseFormRegister<any>
   rules?: RegisterOptions
@@ -13,7 +14,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
 
 export default function Input({
   errorMessage,
-  className,
+  classNameBoundary,
   name,
   register,
   rules,
@@ -37,7 +38,7 @@ export default function Input({
   }
 
   return (
-    <div className={'relative ' + className}>
+    <div className={'relative ' + classNameBoundary}>
       <input className={classNameInput} {...registerResult} {...rest} type={handleType()} />
       {rest.type === 'password' && openEye && (
         <svg

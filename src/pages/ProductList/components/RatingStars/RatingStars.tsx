@@ -1,7 +1,7 @@
 import { omit } from 'lodash'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import pathUrl from '../../../../constants/pathUrl'
-import { QueryConfig } from '../../ProductList'
+import { QueryConfig } from '../../../../hooks/useQueryConfig'
 
 interface RatingStarsProps {
   queryConfig: QueryConfig
