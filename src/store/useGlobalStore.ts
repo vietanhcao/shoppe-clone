@@ -7,6 +7,8 @@ import { User } from '../types/user.type'
 interface GlobalState {
   accessToken: string
   setAccessToken: (token: string) => void
+  refreshToken: string
+  setRefreshToken: (token: string) => void
   profile: User | null
   setProfile: (profile: User | null) => void
 }
@@ -17,8 +19,10 @@ const useGlobalStore = create<GlobalState>()(
     (persist as MyPersist)(
       (set) => ({
         accessToken: '',
+        refreshToken: '',
         profile: null,
         setAccessToken: (token) => set({ accessToken: token }),
+        setRefreshToken: (token) => set({ refreshToken: token }),
         setProfile: (profile) => set({ profile: profile })
       }),
       {
