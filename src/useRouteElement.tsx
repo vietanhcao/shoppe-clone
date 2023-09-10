@@ -13,6 +13,7 @@ import UserLayout from './pages/User/layouts/UserLayout/UserLayout'
 import ChangePassword from './pages/User/pages/ChangePassword/ChangePassword'
 import Profile from './pages/User/pages/Profile/Profile'
 import HistoryPurchase from './pages/User/pages/HistoryPurchase/HistoryPurchase'
+import NotFound from './pages/NotFound/NotFound'
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -99,6 +100,14 @@ export default function useRouteElement() {
       element: (
         <MainLayout>
           <ProductList />
+        </MainLayout>
+      )
+    },
+    {
+      path: '*',
+      element: (
+        <MainLayout>
+          <NotFound />
         </MainLayout>
       )
     }
