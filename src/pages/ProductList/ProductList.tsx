@@ -8,6 +8,7 @@ import { ProductListConfig } from '../../types/product.type'
 import AsideFilter from './components/AsideFilter/AsideFilter'
 import Product from './components/Product/Product'
 import SortProductList from './components/SortProductList/SortProductList'
+import { Helmet } from 'react-helmet-async'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
@@ -26,6 +27,10 @@ export default function ProductList() {
 
   return (
     <div className='bg-gray-200 py-6'>
+      <Helmet>
+        <title>Trang chủ | Shopee Clone</title>
+        <meta name='description' content='Trang chủ dự án Shopee Clone' />
+      </Helmet>
       <div className='container'>
         {productData && (
           <div className='grid grid-cols-12 gap-6'>

@@ -13,6 +13,8 @@ import { purchasesStatus } from '../../constants/purchase'
 import { toast } from 'react-hot-toast'
 import pathUrl from '../../constants/pathUrl'
 import { useTranslation } from 'react-i18next'
+import { Helmet } from 'react-helmet-async'
+import { convert } from 'html-to-text'
 
 export default function ProductDetail() {
   const { t } = useTranslation('product')
@@ -129,6 +131,17 @@ export default function ProductDetail() {
 
   return (
     <div className='bg-gray-200 py-6'>
+      <Helmet>
+        <title>{product.name} | Shopee Clone</title>
+        <meta
+          name='description'
+          content={convert(product.description, {
+            limits: {
+              ellipsis: '...'
+            }
+          })}
+        />
+      </Helmet>
       <div className='container'>
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-6'>

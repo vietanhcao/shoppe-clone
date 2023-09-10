@@ -11,6 +11,7 @@ import { isAxiosUnprocessableEntityError } from '../../libs/utils'
 import { ErrorResponse } from '../../types/api.type'
 import Button from '../../components/Button/Button'
 import pathUrl from '../../constants/pathUrl'
+import { Helmet } from 'react-helmet-async'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -49,6 +50,10 @@ export default function Register() {
   }
   return (
     <div className='bg-orange'>
+      <Helmet>
+        <title>Đăng ký | Shopee Clone</title>
+        <meta name='description' content='Đăng ký tài khoản vào dự án Shopee Clone' />
+      </Helmet>
       <div className='mx-auto max-w-7xl px-4'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>

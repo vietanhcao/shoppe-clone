@@ -9,6 +9,7 @@ import { ErrorResponse } from '../../types/api.type'
 import Input from '../../components/Input'
 import Button from '../../components/Button/Button'
 import pathUrl from '../../constants/pathUrl'
+import { Helmet } from 'react-helmet-async'
 
 const loginSchema = schema.pick(['email', 'password'])
 type FormData = Pick<Schema, 'email' | 'password'>
@@ -51,6 +52,11 @@ export default function Login() {
   }
   return (
     <div className='bg-orange'>
+      <Helmet>
+        <title>Đăng nhập | Shoppe Clone</title>
+        <meta name='description' content='Đăng nhập' />
+      </Helmet>
+
       <div className='container'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
