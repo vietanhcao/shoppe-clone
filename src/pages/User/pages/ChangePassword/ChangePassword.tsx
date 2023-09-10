@@ -8,7 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
 import { isAxiosUnprocessableEntityError } from '../../../../libs/utils'
 import { ErrorResponse } from '../../../../types/api.type'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 type FormData = Pick<UserSchema, 'password' | 'new_password' | 'confirm_password'>
 

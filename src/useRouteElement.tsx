@@ -1,19 +1,21 @@
+import React, { Suspense } from 'react'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
-import RegisterLayout from './layouts/RegisterLayout'
-import Login from './pages/Login'
-import ProductList from './pages/ProductList'
-import Register from './pages/Register'
-import MainLayout from './layouts/MainLayout'
-import useGlobalStore from './store/useGlobalStore'
 import pathUrl from './constants/pathUrl'
-import ProductDetail from './pages/ProductDetail/ProductDetail'
-import Cart from './pages/Cart/Cart'
 import CartLayout from './layouts/CartLayout/CartLayout'
-import UserLayout from './pages/User/layouts/UserLayout/UserLayout'
-import ChangePassword from './pages/User/pages/ChangePassword/ChangePassword'
-import Profile from './pages/User/pages/Profile/Profile'
-import HistoryPurchase from './pages/User/pages/HistoryPurchase/HistoryPurchase'
+import MainLayout from './layouts/MainLayout'
+import RegisterLayout from './layouts/RegisterLayout'
 import NotFound from './pages/NotFound/NotFound'
+import UserLayout from './pages/User/layouts/UserLayout/UserLayout'
+import useGlobalStore from './store/useGlobalStore'
+
+const Login = React.lazy(() => import('./pages/Login'))
+const Register = React.lazy(() => import('./pages/Register'))
+const Cart = React.lazy(() => import('./pages/Cart/Cart'))
+const ProductList = React.lazy(() => import('./pages/ProductList'))
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail/ProductDetail'))
+const ChangePassword = React.lazy(() => import('./pages/User/pages/ChangePassword/ChangePassword'))
+const HistoryPurchase = React.lazy(() => import('./pages/User/pages/HistoryPurchase/HistoryPurchase'))
+const Profile = React.lazy(() => import('./pages/User/pages/Profile/Profile'))
 
 function ProtectedRoute() {
   const isAuthenticated = useGlobalStore.getState().accessToken
@@ -35,7 +37,9 @@ export default function useRouteElement() {
           path: pathUrl.login,
           element: (
             <RegisterLayout>
-              <Login />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Login />
+              </Suspense>
             </RegisterLayout>
           )
         },
@@ -43,7 +47,9 @@ export default function useRouteElement() {
           path: pathUrl.register,
           element: (
             <RegisterLayout>
-              <Register />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Register />
+              </Suspense>
             </RegisterLayout>
           )
         }
@@ -57,7 +63,9 @@ export default function useRouteElement() {
           path: pathUrl.cart,
           element: (
             <CartLayout>
-              <Cart />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Cart />
+              </Suspense>
             </CartLayout>
           )
         },
@@ -72,15 +80,27 @@ export default function useRouteElement() {
           children: [
             {
               path: pathUrl.profile,
-              element: <Profile />
+              element: (
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Profile />
+                </Suspense>
+              )
             },
             {
               path: pathUrl.changePassword,
-              element: <ChangePassword />
+              element: (
+                <Suspense fallback={<div>Loading...</div>}>
+                  <ChangePassword />
+                </Suspense>
+              )
             },
             {
               path: pathUrl.historyPurchase,
-              element: <HistoryPurchase />
+              element: (
+                <Suspense fallback={<div>Loading...</div>}>
+                  <HistoryPurchase />
+                </Suspense>
+              )
             }
           ]
         }
@@ -90,7 +110,9 @@ export default function useRouteElement() {
       path: pathUrl.productDetail,
       element: (
         <MainLayout>
-          <ProductDetail />
+          <Suspense fallback={<div>Loading...</div>}>
+            <ProductDetail />
+          </Suspense>
         </MainLayout>
       )
     },
@@ -99,7 +121,9 @@ export default function useRouteElement() {
       index: true,
       element: (
         <MainLayout>
-          <ProductList />
+          <Suspense fallback={<div>Loading...</div>}>
+            <ProductList />
+          </Suspense>
         </MainLayout>
       )
     },

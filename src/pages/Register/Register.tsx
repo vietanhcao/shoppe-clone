@@ -2,8 +2,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-
-import { omit } from 'lodash'
+// không có tính năng tree-shaking
+import omit from 'lodash/omit'
 import authApi from '../../apis/auth.api'
 import Input from '../../components/Input'
 import { Schema, schema } from '../../libs/rules'

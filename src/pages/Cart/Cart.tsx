@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
-import { keyBy } from 'lodash'
+import keyBy from 'lodash/keyBy'
 import React, { useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
