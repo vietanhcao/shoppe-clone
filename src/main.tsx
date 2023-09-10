@@ -7,6 +7,7 @@ import App from './App'
 import './index.css'
 import ToasterProvider from './providers/ToasterProvider'
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
+import 'src/i18n/i18n'
 
 const queryClient = new QueryClient({
   defaultOptions: {

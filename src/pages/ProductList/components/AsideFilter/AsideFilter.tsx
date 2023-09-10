@@ -13,6 +13,7 @@ import { Schema, schema } from '../../../../libs/rules'
 import { Category } from '../../../../types/category.type'
 import RatingStars from '../RatingStars/RatingStars'
 import InputV2 from '../../../../components/InputV2/InputV2'
+import { useTranslation } from 'react-i18next'
 
 interface AsideFilterProps {
   categories: Category[]
@@ -24,6 +25,7 @@ type FormData = Pick<Schema, 'price_max' | 'price_min'>
 const priceSchema = schema.pick(['price_min', 'price_max'])
 
 export default function AsideFilter({ categories, queryConfig }: AsideFilterProps) {
+  const { t } = useTranslation('home')
   const { category } = queryConfig
   const {
     control,
@@ -99,7 +101,7 @@ export default function AsideFilter({ categories, queryConfig }: AsideFilterProp
             </g>
           </g>
         </svg>
-        Tất cả danh mục
+        {t('aside filter.all categories')}
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <ul>
@@ -149,7 +151,7 @@ export default function AsideFilter({ categories, queryConfig }: AsideFilterProp
             />
           </g>
         </svg>
-        Bộ lọc tìm kiếm
+        {t('aside filter.filter search')}
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <div className='my-5'>
