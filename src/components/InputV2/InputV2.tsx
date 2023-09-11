@@ -36,9 +36,19 @@ function InputV2<
       onChange && onChange(event)
     }
   }
+  console.log('value typeof', typeof value)
+  console.log('value', value)
+  console.log('localValue typeof', typeof localValue)
+  console.log('localValue', localValue)
   return (
     <div className={classNameBoundary}>
-      <input className={classNameInput} {...field} {...rest} onChange={handleChange} value={value || localValue} />
+      <input
+        className={classNameInput}
+        {...field}
+        {...rest}
+        onChange={handleChange}
+        value={value === undefined ? localValue : ''}
+      />
       <div className={classNameError}>{fieldState.error?.message}</div>
     </div>
   )

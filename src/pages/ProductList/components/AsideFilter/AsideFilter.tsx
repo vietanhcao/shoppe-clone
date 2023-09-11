@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
-import omitBy from 'lodash/omitBy'
-import omit from 'lodash/omit'
 import isEmpty from 'lodash/isEmpty'
+import omit from 'lodash/omit'
+import omitBy from 'lodash/omitBy'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from '../../../../components/Button/Button'
 import InputNumber from '../../../../components/InputNumber/InputNumber'
@@ -12,8 +13,6 @@ import { QueryConfig } from '../../../../hooks/useQueryConfig'
 import { Schema, schema } from '../../../../libs/rules'
 import { Category } from '../../../../types/category.type'
 import RatingStars from '../RatingStars/RatingStars'
-import InputV2 from '../../../../components/InputV2/InputV2'
-import { useTranslation } from 'react-i18next'
 
 interface AsideFilterProps {
   categories: Category[]
@@ -31,6 +30,7 @@ export default function AsideFilter({ categories, queryConfig }: AsideFilterProp
     control,
     handleSubmit,
     trigger,
+    reset,
     formState: { errors }
   } = useForm<FormData>({
     defaultValues: {
@@ -59,6 +59,7 @@ export default function AsideFilter({ categories, queryConfig }: AsideFilterProp
   }
 
   const handleRemveAllFilter = () => {
+    reset()
     navigate({
       pathname: pathUrl.home,
       search: createSearchParams(
@@ -158,16 +159,23 @@ export default function AsideFilter({ categories, queryConfig }: AsideFilterProp
         <div>Khoảng giá</div>
         <form className='mt-2' onSubmit={handleSubmit(onSubmit)}>
           <div className='flex items-start'>
-            <InputV2
+            <Controller
               control={control}
               name='price_min'
-              type='number'
-              classNameBoundary='grow'
-              placeholder='₫ TỪ'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
-              classNameError='hidden'
-              onChange={() => {
-                trigger('price_max')
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    classNameBoundary='grow'
+                    placeholder='₫ TỪ'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+                    classNameError='hidden'
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      trigger('price_max')
+                    }}
+                  />
+                )
               }}
             />
 
