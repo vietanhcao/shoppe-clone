@@ -13,6 +13,10 @@ import Button from '../../components/Button/Button'
 import pathUrl from '../../constants/pathUrl'
 import { Helmet } from 'react-helmet-async'
 
+const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
+
+type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
+
 export default function Register() {
   const navigate = useNavigate()
   const {
@@ -20,15 +24,15 @@ export default function Register() {
     handleSubmit,
     setError,
     formState: { errors }
-  } = useForm<Schema>({
-    resolver: yupResolver(schema)
+  } = useForm<FormData>({
+    resolver: yupResolver(registerSchema)
   })
 
   const regtisterAccountMutation = useMutation({
-    mutationFn: (body: Omit<Schema, 'confirm_password'>) => authApi.registerAccount(body)
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body)
   })
 
-  const onSubmit: SubmitHandler<Schema> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     const body = omit(data, ['confirm_password'])
     regtisterAccountMutation.mutate(body, {
       onSuccess: () => {
@@ -48,6 +52,7 @@ export default function Register() {
       }
     })
   }
+  console.log('error', errors)
   return (
     <div className='bg-orange'>
       <Helmet>
