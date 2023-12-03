@@ -3,6 +3,7 @@ import { Product as ProductType } from '../../../../types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, generateNameId } from '../../../../libs/utils'
 import ProductRating from '../../../../components/ProductRating/ProductRating'
 import pathUrl from '../../../../constants/pathUrl'
+import config from '../../../../libs/config'
 
 interface ProductProps {
   product: ProductType
@@ -19,7 +20,7 @@ export default function Product({ product }: ProductProps) {
       <div className='overflow-hidden rounded-sm bg-white shadow transition-transform duration-100 hover:translate-y-[-0.3rem] hover:shadow-md '>
         <div className='relative w-full pt-[100%]'>
           <img
-            src={product.images[0]}
+            src={config.baseUrlImage + product.images[0]}
             alt={product.name}
             className='absolute left-0 top-0 h-full w-full bg-white object-cover'
           />

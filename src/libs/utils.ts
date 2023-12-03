@@ -18,7 +18,7 @@ export function isAxiosUnauthorizedError<UnauthorizedError>(error: unknown): err
 export function isAxiosExpiredTokenError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
   return (
     isAxiosUnauthorizedError<ErrorResponse<{ name: string; message: string }>>(error) &&
-    error.response?.data?.data?.name === 'EXPIRED_TOKEN'
+    error.response?.data?.message === 'EXPIRED_TOKEN'
   )
 }
 
@@ -52,4 +52,4 @@ export const getIdFromNameId = (nameId: string) => {
 }
 
 export const getAvatarUrl = (avatarName?: string) =>
-  avatarName ? `${config.baseUrl}images/${avatarName}` : placeholder
+  avatarName ? `${config.baseUrl}files/images/${avatarName}` : placeholder

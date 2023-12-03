@@ -122,7 +122,7 @@ export default function Profile() {
         const formData = new FormData()
         formData.append('image', file)
         const response = await uploadAvatarMutation.mutateAsync(formData)
-        avatarName = response.data.data
+        avatarName = response.data.data.filename
         setValue('avatar', avatarName)
       }
       const response = await updateProfileMutation.mutateAsync({

@@ -9,10 +9,7 @@ export interface Product {
   view: number
   name: string
   description: string
-  category: {
-    _id: string
-    name: string
-  }
+  category: string[]
   image: string
   createdAt: string
   updatedAt: string
@@ -21,9 +18,8 @@ export interface Product {
 export interface ProductList {
   products: Product[]
   pagination: {
-    page: number
-    limit: number
-    page_size: number
+    totalPages: number
+    totalRows: number
   }
 }
 
@@ -38,4 +34,6 @@ export interface ProductListConfig {
   price_min?: number | string
   name?: string
   category?: string
+  offset?: number | string
+  [key: string]: unknown
 }

@@ -30,13 +30,13 @@ export default function ChangePassword() {
   })
 
   const updatePasswordMutation = useMutation({
-    mutationFn: userApi.updateProfile
+    mutationFn: userApi.updatePassword
   })
 
   const onSubmit = handleSubmit(async (data: FormData) => {
     try {
-      const response = await updatePasswordMutation.mutateAsync(omit(data, 'confirm_password'))
-      toast.success(response.data.message)
+      await updatePasswordMutation.mutateAsync(omit(data, 'confirm_password'))
+      toast.success('Success')
     } catch (error) {
       if (isAxiosUnprocessableEntityError<ErrorResponse<FormData>>(error)) {
         const formError = error.response?.data.data

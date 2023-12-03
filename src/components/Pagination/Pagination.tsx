@@ -5,7 +5,7 @@ import { QueryConfig } from '../../hooks/useQueryConfig'
 
 interface PaginationProps {
   queryConfig: QueryConfig
-  pageSize: number
+  pageSize?: number
 }
 
 /**
@@ -31,7 +31,7 @@ Với range = 2 áp dụng cho khoảng cách đầu, cuối và xung quanh curr
 
 const RANGE = 2
 
-export default function Pagination({ queryConfig, pageSize }: PaginationProps) {
+export default function Pagination({ queryConfig, pageSize = 1 }: PaginationProps) {
   const page = Number(queryConfig.page)
 
   const renderPagination = () => {

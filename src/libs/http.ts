@@ -6,18 +6,21 @@ import useGlobalStore from '../store/useGlobalStore'
 import { ErrorResponse } from '../types/api.type'
 import { AuthResponse, RefreshTokenReponse } from '../types/auth.type'
 import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils'
+import config from './config'
 
 class Http {
   instance: AxiosInstance
   private accessToken: string
   private refreshToken: string
   private refreshTokenRequest: Promise<string> | null
+  private PREFIX = 'Bearer'
+  private baseURL = config.baseUrl
   constructor() {
     this.accessToken = useGlobalStore.getState().accessToken
     this.refreshToken = useGlobalStore.getState().refreshToken
     this.refreshTokenRequest = null
     this.instance = axios.create({
-      baseURL: 'https://api-ecom.duthanhduoc.com/',
+      baseURL: this.baseURL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +32,7 @@ class Http {
     this.instance.interceptors.request.use(
       (config) => {
         if (this.accessToken) {
-          config.headers.authorization = this.accessToken
+          config.headers.authorization = this.PREFIX + ' ' + this.accessToken
         }
         return config
       },
@@ -43,9 +46,9 @@ class Http {
         console.log('response', response)
         const { url } = response.config
         if (url === URL_LOGIN || url === URL_REGISTER) {
-          this.accessToken = (response.data as AuthResponse).data.access_token
+          this.accessToken = (response.data as AuthResponse).data.accessToken
           useGlobalStore.getState().setAccessToken(this.accessToken)
-          this.refreshToken = (response.data as AuthResponse).data.refresh_token
+          this.refreshToken = (response.data as AuthResponse).data.refreshToken
           useGlobalStore.getState().setRefreshToken(this.refreshToken)
           useGlobalStore.getState().setProfile((response.data as AuthResponse).data.user)
         } else if (url === URL_LOGOUT) {
@@ -82,7 +85,7 @@ class Http {
           const { url } = config
           // Trường hợp Token hết hạn và request đó không phải là của request refresh token
           // thì chúng ta mới tiến hành gọi refresh token
-          console.log(config)
+          console.log('config', config)
           if (isAxiosExpiredTokenError(error) && url !== URL_REFRESH_TOKEN) {
             // Hạn chế gọi 2 lần handleRefreshToken
             this.refreshTokenRequest = this.refreshTokenRequest
@@ -93,9 +96,9 @@ class Http {
                     this.refreshTokenRequest = null
                   }, 10000)
                 })
-            return this.refreshTokenRequest.then((access_token) => {
+            return this.refreshTokenRequest.then((accessToken) => {
               // Nghĩa là chúng ta tiếp tục gọi lại request cũ vừa bị lỗi
-              return this.instance({ ...config, headers: { ...config.headers, authorization: access_token } })
+              return this.instance({ ...config, headers: { ...config.headers, authorization: accessToken } })
             })
           }
 
@@ -119,16 +122,23 @@ class Http {
     )
   }
 
-  private handleRefreshToken() {
-    return this.instance
-      .post<RefreshTokenReponse>(URL_REFRESH_TOKEN, {
-        refresh_token: this.refreshToken
-      })
+  private async handleRefreshToken() {
+    return axios
+      .post<RefreshTokenReponse>(
+        URL_REFRESH_TOKEN,
+        {},
+        {
+          baseURL: this.baseURL,
+          headers: {
+            Authorization: this.PREFIX + ' ' + this.refreshToken
+          }
+        }
+      )
       .then((res) => {
-        const { access_token } = res.data.data
-        useGlobalStore.getState().setAccessToken(this.accessToken)
-        this.accessToken = access_token
-        return access_token
+        const { accessToken } = res.data.data
+        useGlobalStore.getState().setAccessToken(accessToken)
+        this.accessToken = accessToken
+        return accessToken
       })
       .catch((error) => {
         this.accessToken = ''

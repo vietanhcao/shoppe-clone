@@ -8,10 +8,10 @@ import { QueryConfig } from '../../../../hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig
-  pageSize: number
+  pageSize?: number
 }
 
-export default function SortProductList({ queryConfig, pageSize }: Props) {
+export default function SortProductList({ queryConfig, pageSize = 1 }: Props) {
   const { sort_by = sortBy.createdAt, order } = queryConfig
   const page = Number(queryConfig.page)
   const navigate = useNavigate()

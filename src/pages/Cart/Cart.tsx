@@ -13,12 +13,13 @@ import { purchasesStatus } from '../../constants/purchase'
 import { formatCurrency, generateNameId } from '../../libs/utils'
 import useProductStore from '../../store/useProductStore'
 import { Purchase } from '../../types/purchase.type'
+import config from '../../libs/config'
 
 export default function Cart() {
   const { extendedPurchases, setExtendedPurchases } = useProductStore()
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchase', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
+    queryFn: () => purchaseApi.getPurchases({ 'status[eq]': purchasesStatus.inCart })
   })
   const updatePurchaseMutation = useMutation({
     mutationFn: purchaseApi.updatePurchase,
@@ -195,7 +196,10 @@ export default function Cart() {
                                   })}`}
                                   className='h-20 w-20 flex-shrink-0'
                                 >
-                                  <img alt={purchase.product.name} src={purchase.product.images[0]} />
+                                  <img
+                                    alt={purchase.product.name}
+                                    src={config.baseUrlImage + purchase.product.images[0]}
+                                  />
                                 </Link>
                                 <div className='flex-grow px-2 pb-2 pt-1'>
                                   <Link

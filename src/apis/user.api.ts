@@ -9,13 +9,16 @@ interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'createdAt' | '
 
 const userApi = {
   getProfile() {
-    return http.get<SuccessResponse<User>>('me')
+    return http.get<SuccessResponse<User>>('auth/me')
   },
   updateProfile(body: BodyUpdateProfile) {
-    return http.put<SuccessResponse<User>>('user', body)
+    return http.put<SuccessResponse<User>>('users', body)
+  },
+  updatePassword(body: BodyUpdateProfile) {
+    return http.put<SuccessResponse<User>>('auth/change-password', body)
   },
   uploadAvatar(body: FormData) {
-    return http.post<SuccessResponse<string>>('user/upload-avatar', body, {
+    return http.post<SuccessResponse<{ filename: string }>>('users/upload-avatar', body, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

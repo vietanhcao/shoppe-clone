@@ -7,6 +7,7 @@ import { purchasesStatus } from '../../../../constants/purchase'
 import useQueryParams from '../../../../hooks/useQueryParams'
 import { formatCurrency, generateNameId } from '../../../../libs/utils'
 import { PurchaseListStatus } from '../../../../types/purchase.type'
+import config from '../../../../libs/config'
 
 const purchaseTabs = [
   {
@@ -43,7 +44,13 @@ export default function HistoryPurchase() {
   // nên query này ko bị inactive ko cần set staleTime
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchase', { status }],
-    queryFn: () => purchaseApi.getPurchases({ status: status as PurchaseListStatus })
+    queryFn: () => {
+      let params: { [key: string]: unknown } = { 'status[eq]': status as PurchaseListStatus }
+      if (status === 0) {
+        params = {}
+      }
+      return purchaseApi.getPurchases(params)
+    }
   })
 
   const purchasesInCart = purchasesInCartData?.data.data
@@ -83,7 +90,7 @@ export default function HistoryPurchase() {
                 <div className='flex-shrink-0'>
                   <img
                     className='h-20 w-20 object-cover'
-                    src={purchase.product.images[0]}
+                    src={config.baseUrlImage + purchase.product.images[0]}
                     alt={purchase.product.name}
                   />
                 </div>

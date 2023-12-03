@@ -9,6 +9,7 @@ import { formatCurrency } from '../../libs/utils'
 import useGlobalStore from '../../store/useGlobalStore'
 import NavHeader from '../NavHeader/NavHeader'
 import Popover from '../Popover'
+import config from '../../libs/config'
 
 const MAX_PURCHASES_IN_CART = 5
 
@@ -21,8 +22,8 @@ export default function Header() {
   // khi chuyển trang Header chỉ bị render ko bị unmount - mount lại trừ trường hơp logout
   // nên query này ko bị inactive ko cần set staleTime
   const { data: purchasesInCartData } = useQuery({
-    queryKey: ['purchase', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    queryKey: ['purchase', { 'status[eq]': purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ 'status[eq]': purchasesStatus.inCart }),
     enabled: isAuthenticated
   })
 
@@ -77,7 +78,7 @@ export default function Header() {
                           <div className='mt-2 flex p-2 hover:bg-gray-100' key={purchase._id}>
                             <div className='flex-shrink-0'>
                               <img
-                                src={purchase.product.image}
+                                src={config.baseUrlImage + purchase.product.image}
                                 alt={purchase.product.name}
                                 className='h-11 w-11 rounded-sm object-cover'
                               />

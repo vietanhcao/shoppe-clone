@@ -15,6 +15,7 @@ import pathUrl from '../../constants/pathUrl'
 import { useTranslation } from 'react-i18next'
 import { Helmet } from 'react-helmet-async'
 import { convert } from 'html-to-text'
+import config from '../../libs/config'
 
 export default function ProductDetail() {
   const { t } = useTranslation('product')
@@ -59,11 +60,11 @@ export default function ProductDetail() {
     }
   }
 
-  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: product?.category._id }
+  const queryConfig: ProductListConfig = { limit: '20', page: '1', 'category[eq]': product?.category[0] }
   const { data: productData } = useQuery({
     queryKey: ['productList', queryConfig],
     queryFn: () => productApi.getProducts(queryConfig),
-    enabled: !!product?.category._id,
+    enabled: !!product?.category[0],
     staleTime: 3 * 60 * 1000
   })
 
@@ -106,7 +107,7 @@ export default function ProductDetail() {
       {
         onSuccess: () => {
           toast.success('Thêm vào giỏ hàng thành công')
-          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
+          queryClient.invalidateQueries({ queryKey: ['purchase', { 'status[eq]': purchasesStatus.inCart }] })
         }
       }
     )
@@ -152,7 +153,7 @@ export default function ProductDetail() {
                 onMouseLeave={handleRemoveZoom}
               >
                 <img
-                  src={activeImage}
+                  src={config.baseUrlImage + activeImage}
                   alt={product.name}
                   className='pointer-events-none absolute left-0 top-0 h-full w-full bg-white object-cover'
                   ref={imageRef}
@@ -180,7 +181,7 @@ export default function ProductDetail() {
                   return (
                     <div key={image} className='relative w-full pt-[100%] ' onMouseEnter={() => chooseActive(image)}>
                       <img
-                        src={image}
+                        src={config.baseUrlImage + image}
                         alt={product.name}
                         className='absolute left-0 top-0 h-full w-full cursor-pointer bg-white object-cover'
                       />

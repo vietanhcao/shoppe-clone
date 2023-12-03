@@ -9,13 +9,47 @@ import AsideFilter from './components/AsideFilter/AsideFilter'
 import Product from './components/Product/Product'
 import SortProductList from './components/SortProductList/SortProductList'
 import { Helmet } from 'react-helmet-async'
+import { omit } from 'lodash'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
+  console.log('queryConfig', queryConfig)
+  // convert page to offset
+  if (queryConfig.page) {
+    queryConfig.offset = `${(Number(queryConfig.page) - 1) * Number(queryConfig.limit)}`
+    // delete queryConfig.page
+  }
+
+  if (queryConfig.sort_by) {
+    queryConfig[`${queryConfig.sort_by}[sort]`] = queryConfig.order === 'desc' ? 'desc' : 'asc'
+  }
+
+  if (queryConfig.category) {
+    queryConfig[`category[eq]`] = queryConfig.category
+  }
+
+  if (queryConfig.price_min) {
+    queryConfig[`price[gte]`] = queryConfig.price_min
+  }
+
+  if (queryConfig.price_max) {
+    queryConfig[`price[lte]`] = queryConfig.price_max
+  }
+
+  if (queryConfig.rating_filter) {
+    queryConfig[`rating[gte]`] = queryConfig.rating_filter
+  }
+
+  if (queryConfig.name) {
+    queryConfig[`name[contains]`] = queryConfig.name
+  }
 
   const { data: productData } = useQuery({
     queryKey: ['productList', queryConfig],
-    queryFn: () => productApi.getProducts(queryConfig as ProductListConfig),
+    queryFn: () =>
+      productApi.getProducts(
+        omit(queryConfig as ProductListConfig, ['page', 'category', 'price_min', 'price_max', 'rating_filter', 'name'])
+      ),
     keepPreviousData: true,
     staleTime: 3 * 60 * 1000
   })
@@ -38,7 +72,7 @@ export default function ProductList() {
               <AsideFilter categories={categoriesData?.data.data || []} queryConfig={queryConfig} />
             </div>
             <div className='col-span-9'>
-              <SortProductList queryConfig={queryConfig} pageSize={productData.data.data.pagination.page_size} />
+              <SortProductList queryConfig={queryConfig} pageSize={productData.data.data.pagination.totalPages} />
               <div className='mt-6 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
                 {/* <!-- Product Card --> */}
                 {productData.data.data.products.map((product) => (
@@ -47,7 +81,7 @@ export default function ProductList() {
                   </div>
                 ))}
               </div>
-              <Pagination queryConfig={queryConfig} pageSize={productData.data.data.pagination.page_size} />
+              <Pagination queryConfig={queryConfig} pageSize={productData.data.data.pagination.totalPages} />
             </div>
           </div>
         )}
