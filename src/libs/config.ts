@@ -1,6 +1,6 @@
 const config = {
-  baseUrl: 'http://localhost:5000/api/',
-  baseUrlImage: 'http://localhost:5000/api/files/images/',
+  baseUrl: 'https://devcamperapp.fun/api/',
+  baseUrlImage: 'https://devcamperapp.fun/api/files/images/',
   maxSizeUploadAvatar: 1048576 // bytes
 }
 
