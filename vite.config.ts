@@ -11,7 +11,7 @@ export default defineConfig({
     environment: 'jsdom'
   },
   server: {
-    port: 1994
+    port: 3000
   },
   css: {
     devSourcemap: true
