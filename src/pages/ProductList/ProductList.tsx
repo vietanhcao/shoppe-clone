@@ -13,7 +13,6 @@ import { omit } from 'lodash'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
-  console.log('queryConfig', queryConfig)
   // convert page to offset
   if (queryConfig.page) {
     queryConfig.offset = `${(Number(queryConfig.page) - 1) * Number(queryConfig.limit)}`

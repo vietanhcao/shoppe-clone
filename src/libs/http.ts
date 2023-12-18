@@ -43,7 +43,6 @@ class Http {
 
     this.instance.interceptors.response.use(
       (response) => {
-        console.log('response', response)
         const { url } = response.config
         if (url === URL_LOGIN || url === URL_REGISTER) {
           this.accessToken = (response.data as AuthResponse).data.accessToken
@@ -85,7 +84,6 @@ class Http {
           const { url } = config
           // Trường hợp Token hết hạn và request đó không phải là của request refresh token
           // thì chúng ta mới tiến hành gọi refresh token
-          console.log('config', config)
           if (isAxiosExpiredTokenError(error) && url !== URL_REFRESH_TOKEN) {
             // Hạn chế gọi 2 lần handleRefreshToken
             this.refreshTokenRequest = this.refreshTokenRequest
@@ -116,6 +114,7 @@ class Http {
           const data: any | undefined = error.response?.data
           const message = data?.message || error.message
           toast.error(message)
+          window.location.assign('/login')
         }
         return Promise.reject(error)
       }

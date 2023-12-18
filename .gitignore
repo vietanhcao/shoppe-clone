@@ -28,3 +28,6 @@ stats.html
 
 #coverage
 coverage
+
+# enviroment
+.env

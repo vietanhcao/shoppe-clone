@@ -36,10 +36,6 @@ function InputV2<
       onChange && onChange(event)
     }
   }
-  console.log('value typeof', typeof value)
-  console.log('value', value)
-  console.log('localValue typeof', typeof localValue)
-  console.log('localValue', localValue)
   return (
     <div className={classNameBoundary}>
       <input

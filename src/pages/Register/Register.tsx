@@ -52,7 +52,6 @@ export default function Register() {
       }
     })
   }
-  console.log('error', errors)
   return (
     <div className='bg-orange'>
       <Helmet>

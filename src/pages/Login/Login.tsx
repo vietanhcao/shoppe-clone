@@ -31,8 +31,7 @@ export default function Login() {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     loginAccountMutation.mutate(data, {
-      onSuccess: (data) => {
-        console.log('loginAccountMutation data', data)
+      onSuccess: () => {
         navigate('/')
       },
       onError: (error) => {
